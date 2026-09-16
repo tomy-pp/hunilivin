@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Villa · Hunilivin</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--sand:#f5f4f2;--ink:#161616;--green:#1a1a1a;--gold:#8f8f8f;--muted:#8a8a8a;
+    --line:#e4e4e2;--avail:#1a1a1a;--booked:#b4b4b4;--soon:#7a7a7a}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Jost',-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);
+    background:var(--sand);line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.015em}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  a{color:inherit}
+
+  header{position:sticky;top:0;z-index:1000;background:rgba(246,241,231,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:18px;height:112px}
+  .logo{display:flex;align-items:center;text-decoration:none}
+  .logo img{height:98px;width:auto;display:block}
+  footer .logo img{height:84px;filter:brightness(0) invert(1)}
+  .nav .right{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .toggle{display:inline-flex;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#fff}
+  .toggle button{border:0;background:transparent;padding:6px 11px;font-size:13px;cursor:pointer;color:var(--muted)}
+  .toggle button.on{background:var(--green);color:#fff}
+
+  .back{display:inline-block;margin:22px 0 6px;font-size:14px;color:var(--muted);text-decoration:none}
+  .back:hover{color:var(--green)}
+
+  .top{display:grid;grid-template-columns:1.35fr 1fr;gap:34px;margin-top:8px;align-items:start}
+
+  /* gallery */
+  .gallery{border-radius:16px;overflow:hidden;background:#000;position:relative}
+  .stage{position:relative;aspect-ratio:4/3;background:#ddd}
+  .stage img{width:100%;height:100%;object-fit:cover;display:block;user-select:none}
+  .arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;
+    background:rgba(255,255,255,.9);cursor:pointer;font-size:18px;color:var(--ink);display:flex;align-items:center;
+    justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.25);transition:background .15s,transform .15s}
+  .arrow:hover{background:#fff;transform:translateY(-50%) scale(1.08)}
+  .arrow.prev{left:14px} .arrow.next{right:14px}
+  .counter{position:absolute;bottom:12px;right:14px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;
+    padding:4px 10px;border-radius:20px}
+  .thumbs{display:flex;gap:10px;padding:12px;background:#fff}
+  .thumbs img{width:76px;height:56px;object-fit:cover;border-radius:8px;cursor:pointer;opacity:.55;
+    border:2px solid transparent;transition:opacity .15s}
+  .thumbs img.on{opacity:1;border-color:var(--gold)}
+
+  /* info panel */
+  .panel{position:sticky;top:124px}
+  .badge{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;border-radius:20px;
+    padding:5px 12px;background:#fff;border:1px solid var(--line)}
+  .badge .dot{width:8px;height:8px;border-radius:50%}
+  .badge.available{color:var(--avail)} .badge.available .dot{background:var(--avail)}
+  .badge.booked{color:var(--booked)} .badge.booked .dot{background:var(--booked)}
+  .badge.soon{color:var(--soon)} .badge.soon .dot{background:var(--soon)}
+  .panel h1{font-size:32px;color:var(--green);margin:14px 0 6px}
+  .panel .loc{color:var(--muted);font-size:15px}
+  .facts{display:flex;gap:18px;margin:16px 0;flex-wrap:wrap}
+  .facts div{font-size:14px;color:var(--ink)}
+  .facts b{font-family:'Fraunces',Georgia,serif;font-size:20px;color:var(--green);display:block}
+  .price{font-family:'Fraunces',Georgia,serif;font-size:30px;font-weight:700;color:var(--green);margin:14px 0 2px}
+  .price small{font-family:-apple-system,sans-serif;font-size:14px;color:var(--muted);font-weight:400}
+  .wa{width:100%;margin-top:16px;background:#161616;color:#fff;border:0;border-radius:12px;padding:15px;
+    font-size:16px;font-weight:500;letter-spacing:.02em;cursor:pointer}
+  .wa.disabled{background:#e7e2d6;color:var(--muted);cursor:not-allowed}
+
+  section.blk{padding:44px 0;border-top:1px solid var(--line)}
+  .blk h2{font-size:24px;color:var(--green);margin-bottom:14px}
+  .blk p{font-size:16px;color:#39423b;max-width:760px}
+  .amen{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
+  .amen div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;display:flex;gap:9px;align-items:center}
+  .amen .ac{color:var(--ink);font-weight:700}
+  #minimap{height:320px;border-radius:14px;margin-top:8px;border:1px solid var(--line)}
+  .pin svg{filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
+
+  footer{background:var(--ink);color:#b3b3b3;padding:30px 0;font-size:13px;margin-top:30px}
+  footer .fx{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  footer .logo{color:#fff}
+
+  @media(max-width:820px){
+    .top{grid-template-columns:1fr}
+    .panel{position:static}
+    .amen{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="mockup.html" class="logo"><img src="logo-trim.png" alt="Hunilivin" /></a>
+    <div class="right">
+      <div class="toggle" id="lang"><button data-lang="en" class="on">EN</button><button data-lang="id">ID</button></div>
+      <div class="toggle" id="cur"><button data-cur="IDR" class="on">IDR</button><button data-cur="USD">USD</button></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <a href="mockup.html" class="back" data-t="back">← Back to all villas</a>
+
+  <div class="top">
+    <div>
+      <div class="gallery">
+        <div class="stage">
+          <img id="mainimg" src="" alt="" />
+          <button class="arrow prev" onclick="nav(-1)">◀</button>
+          <button class="arrow next" onclick="nav(1)">▶</button>
+          <div class="counter"><span id="cnow">1</span> / <span id="ctot">1</span></div>
+        </div>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <span class="badge" id="badge"><span class="dot"></span><span id="stlabel"></span></span>
+      <h1 id="vname"></h1>
+      <div class="loc" id="vloc"></div>
+      <div class="loc" id="vnear" style="margin-top:2px"></div>
+      <div class="facts" id="facts"></div>
+      <div class="price" id="price"></div>
+      <button class="wa" id="wabtn"></button>
+    </div>
+  </div>
+
+  <section class="blk">
+    <h2 data-t="about_villa">About this villa</h2>
+    <p id="desc"></p>
+  </section>
+
+  <section class="blk">
+    <h2 data-t="amenities">Amenities</h2>
+    <div class="amen" id="amen"></div>
+  </section>
+
+  <section class="blk">
+    <h2 data-t="location">Location</h2>
+    <div id="minimap"></div>
+  </section>
+</div>
+
+<footer><div class="wrap fx">
+  <div class="logo"><img src="logo-trim.png" alt="Hunilivin" /></div>
+  <div>© 2026 Hunilivin · Villa management, Bali</div>
+</div></footer>
+
+<script>
+const RATE=16000;
+const AMEN={
+  pool:{en:"Private pool",id:"Kolam pribadi",ic:"🏊"},
+  ocean:{en:"Ocean view",id:"Pemandangan laut",ic:"🌊"},
+  wifi:{en:"Fast Wi-Fi",id:"Wi-Fi cepat",ic:"📶"},
+  ac:{en:"Air conditioning",id:"AC",ic:"❄️"},
+  kitchen:{en:"Full kitchen",id:"Dapur lengkap",ic:"🍳"},
+  parking:{en:"Free parking",id:"Parkir gratis",ic:"🅿️"},
+  breakfast:{en:"Breakfast",id:"Sarapan",ic:"🥐"},
+  cleaning:{en:"Daily cleaning",id:"Bersih-bersih harian",ic:"🧹"},
+  garden:{en:"Tropical garden",id:"Taman tropis",ic:"🌴"},
+  gym:{en:"Gym",id:"Gym",ic:"🏋️"},
+  workspace:{en:"Workspace",id:"Ruang kerja",ic:"💻"},
+};
+const villas=[
+ {name:"Uluwatu Cliff Villa",area:"Uluwatu",br:3,ba:3,price:4500000,status:"available",lat:-8.829,lng:115.087,
+  img:"https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1000&q=72",
+  amen:["pool","ocean","wifi","ac","kitchen","parking","cleaning"],
+  d_en:"Perched on the Uluwatu cliffs with sweeping Indian Ocean views, this 3-bedroom villa pairs an infinity pool with sunset-facing living spaces — steps from Bali's best surf breaks.",
+  d_id:"Berdiri di tebing Uluwatu dengan panorama Samudra Hindia, villa 3 kamar ini memadukan infinity pool dengan ruang santai menghadap matahari terbenam — dekat dari ombak surfing terbaik Bali."},
+ {name:"Canggu Loft Villa",area:"Canggu",br:2,ba:2,price:3200000,status:"booked",lat:-8.647,lng:115.138,
+  img:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=72",
+  amen:["pool","wifi","ac","kitchen","workspace","parking"],
+  d_en:"A modern loft-style villa in the heart of Canggu — walking distance to cafés, beach clubs and co-working spaces. Ideal for digital nomads and couples.",
+  d_id:"Villa bergaya loft modern di jantung Canggu — jarak jalan kaki ke kafe, beach club, dan ruang kerja bersama. Ideal buat digital nomad dan pasangan."},
+ {name:"Ubud Jungle Villa",area:"Ubud",br:4,ba:4,price:5800000,status:"available",lat:-8.507,lng:115.263,
+  img:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=72",
+  amen:["pool","garden","wifi","ac","kitchen","breakfast","cleaning"],
+  d_en:"Wake up to birdsong and river-valley views in this 4-bedroom retreat surrounded by Ubud's rice terraces and jungle. Total privacy, ten minutes from Ubud center.",
+  d_id:"Bangun dengan kicau burung dan pemandangan lembah sungai di retret 4 kamar yang dikelilingi sawah dan hutan Ubud. Privasi penuh, sepuluh menit dari pusat Ubud."},
+ {name:"Seminyak Beach House",area:"Seminyak",br:3,ba:3,price:4000000,status:"available",lat:-8.690,lng:115.168,
+  img:"https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=72",
+  amen:["pool","wifi","ac","kitchen","parking","cleaning"],
+  d_en:"A stylish beach house just minutes from Seminyak's boutiques, restaurants and sunset bars. Open-plan living with a private pool and tropical garden.",
+  d_id:"Beach house bergaya hanya beberapa menit dari butik, restoran, dan bar sunset Seminyak. Ruang terbuka dengan kolam pribadi dan taman tropis."},
+ {name:"Bingin Surf Villa",area:"Bingin",br:2,ba:2,price:2800000,status:"booked",lat:-8.808,lng:115.113,
+  img:"https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=1000&q=72",
+  amen:["pool","ocean","wifi","ac","parking"],
+  d_en:"A laid-back 2-bedroom villa above Bingin beach, built for surfers and slow mornings. Ocean breeze, plunge pool, and the reef a short walk down the cliff.",
+  d_id:"Villa 2 kamar santai di atas Pantai Bingin, dibuat buat peselancar dan pagi yang tenang. Angin laut, plunge pool, dan reef sejauh jalan kaki menuruni tebing."},
+ {name:"Ungasan Ocean Villa",area:"Ungasan",br:5,ba:5,price:8500000,status:"available",lat:-8.816,lng:115.147,
+  img:"https://images.unsplash.com/photo-1601918774946-25832a4be0d6?auto=format&fit=crop&w=1000&q=72",
+  amen:["pool","ocean","wifi","ac","kitchen","breakfast","cleaning","gym"],
+  d_en:"Our flagship 5-bedroom estate in Ungasan — a private clifftop compound with a 20-meter pool, full staff, and an uninterrupted ocean horizon. Built for groups and celebrations.",
+  d_id:"Estat unggulan 5 kamar kami di Ungasan — kompleks pribadi di atas tebing dengan kolam 20 meter, staf lengkap, dan cakrawala laut tanpa halangan. Cocok buat rombongan dan perayaan."},
+ {name:"Nusa Dua Villa",area:"Nusa Dua",br:3,ba:3,price:0,status:"soon",lat:-8.800,lng:115.228,
+  img:"https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=1000&q=72",
+  amen:["pool","wifi","ac","kitchen","parking","garden"],
+  d_en:"Opening soon — a serene 3-bedroom villa in gated Nusa Dua, moments from calm white-sand beaches. Register your interest to be first to book.",
+  d_id:"Segera hadir — villa 3 kamar tenang di kawasan Nusa Dua, dekat pantai pasir putih yang tenang. Daftarkan minatmu untuk jadi yang pertama booking."},
+ {name:"Pererenan Villa",area:"Pererenan",br:2,ba:2,price:0,status:"soon",lat:-8.645,lng:115.120,
+  img:"https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1000&q=72",
+  amen:["pool","wifi","ac","kitchen","workspace"],
+  d_en:"Coming soon — a bright 2-bedroom villa in up-and-coming Pererenan, surrounded by rice fields yet minutes from the beach.",
+  d_id:"Segera hadir — villa 2 kamar terang di Pererenan yang sedang naik daun, dikelilingi sawah namun beberapa menit dari pantai."},
+ {name:"Sanur Garden Villa",area:"Sanur",br:4,ba:4,price:0,status:"soon",lat:-8.688,lng:115.262,
+  img:"https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1000&q=72",
+  amen:["pool","garden","wifi","ac","kitchen","breakfast"],
+  d_en:"Coming soon — a family-friendly 4-bedroom villa in laid-back Sanur, with a large garden and calm-water beaches perfect for kids.",
+  d_id:"Segera hadir — villa 4 kamar ramah keluarga di Sanur yang santai, dengan taman luas dan pantai berair tenang yang cocok buat anak-anak."},
+];
+// [min to nearest beach, min from airport] per villa
+const NEAR=[[5,45],[7,35],[40,60],[3,30],[4,50],[8,40],[5,20],[6,40],[4,30]];
+// shared extra photos so each villa has a browsable gallery (mockup only)
+const EXTRA=[
+ "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=72",
+ "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1000&q=72",
+ "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1000&q=72",
+ "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=72",
+];
+const ST={available:{en:"Available",id:"Tersedia"},booked:{en:"Booked",id:"Terisi"},soon:{en:"Coming soon",id:"Segera hadir"}};
+const T={
+  back:{en:"← Back to all villas",id:"← Kembali ke semua villa"},
+  about_villa:{en:"About this villa",id:"Tentang villa ini"},
+  amenities:{en:"Amenities",id:"Fasilitas"},
+  location:{en:"Location",id:"Lokasi"},
+};
+
+const id=Math.max(0,Math.min(villas.length-1, parseInt(new URLSearchParams(location.search).get("id")||"0",10)||0));
+const v=villas[id];
+const gallery=[v.img,...EXTRA];
+let lang="en", cur="IDR", gi=0;
+
+function fmtPrice(idr){
+  if(!idr) return {m:(lang==="en"?"Coming soon":"Segera hadir"),s:""};
+  if(cur==="IDR") return {m:"Rp"+idr.toLocaleString("id-ID"),s:lang==="en"?"/night":"/malam"};
+  return {m:"$"+Math.round(idr/RATE).toLocaleString("en-US"),s:lang==="en"?"/night":"/malam"};
+}
+function showImg(){
+  document.getElementById("mainimg").src=gallery[gi];
+  document.getElementById("cnow").textContent=gi+1;
+  document.querySelectorAll("#thumbs img").forEach((t,i)=>t.classList.toggle("on",i===gi));
+}
+function nav(d){ gi=(gi+d+gallery.length)%gallery.length; showImg(); }
+window.nav=nav;
+
+function render(){
+  document.title=v.name+" · Hunilivin";
+  document.querySelectorAll("[data-t]").forEach(el=>{const k=el.getAttribute("data-t");if(T[k])el.textContent=T[k][lang];});
+  document.documentElement.lang=lang;
+  document.getElementById("vname").textContent=v.name;
+  document.getElementById("vloc").textContent=v.area+", Bali";
+  document.getElementById("vnear").textContent=lang==="en"
+    ? `${NEAR[id][0]} min to beach · ${NEAR[id][1]} min from airport`
+    : `${NEAR[id][0]} mnt ke pantai · ${NEAR[id][1]} mnt dari bandara`;
+  const badge=document.getElementById("badge"); badge.className="badge "+v.status;
+  document.getElementById("stlabel").textContent=ST[v.status][lang];
+  document.getElementById("facts").innerHTML=
+    `<div><b>${v.br}</b>${lang==="en"?"Bedrooms":"Kamar tidur"}</div>
+     <div><b>${v.ba}</b>${lang==="en"?"Bathrooms":"Kamar mandi"}</div>
+     <div><b>${Math.max(v.br*2,2)}</b>${lang==="en"?"Guests":"Tamu"}</div>`;
+  const p=fmtPrice(v.price);
+  document.getElementById("price").innerHTML=`${p.m} <small>${p.s}</small>`;
+  const wa=document.getElementById("wabtn");
+  const PHONE="6281234567890"; // TODO: ganti nomor WhatsApp bisnis asli
+  if(v.status==="booked"){wa.className="wa disabled";wa.textContent=lang==="en"?"Currently booked":"Sedang terisi";wa.onclick=null;}
+  else{
+    if(v.status==="soon"){wa.className="wa";wa.textContent=lang==="en"?"Notify me when available":"Beri tahu saat tersedia";}
+    else{wa.className="wa";wa.textContent=lang==="en"?"Enquire on WhatsApp":"Tanya via WhatsApp";}
+    const msg=v.status==="soon"
+      ? (lang==="en"?`Hi Hunilivin, please notify me when ${v.name} is available.`:`Halo Hunilivin, tolong beri tahu saya saat ${v.name} tersedia.`)
+      : (lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Is it available?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Apakah tersedia?`);
+    wa.onclick=()=>{const url=`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;const w=window.open(url,"_blank");if(!w)window.location.href=url;};
+  }
+  document.getElementById("desc").textContent=lang==="en"?v.d_en:v.d_id;
+  document.getElementById("amen").innerHTML=v.amen.map(k=>`<div><span class="ac">✓</span> ${AMEN[k][lang]}</div>`).join("");
+  document.getElementById("ctot").textContent=gallery.length;
+}
+
+// thumbnails
+document.getElementById("thumbs").innerHTML=gallery.map((g,i)=>`<img src="${g}" onclick="gi=${i};showImg()" alt=""/>`).join("");
+window.gi=gi; window.showImg=showImg;
+
+// mini map
+const mmap=L.map("minimap",{scrollWheelZoom:false,zoomControl:true}).setView([v.lat,v.lng],14);
+L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",{
+  attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:"abcd",maxZoom:20}).addTo(mmap);
+L.marker([v.lat,v.lng],{icon:L.divIcon({className:"pin",iconSize:[30,40],iconAnchor:[15,40],
+  html:`<svg width="30" height="40" viewBox="0 0 30 40"><path d="M15 0C7 0 .5 6.4.5 14.3.5 25 15 40 15 40s14.5-15 14.5-25.7C29.5 6.4 23 0 15 0z" fill="#d13b30"/><circle cx="15" cy="14.3" r="5.2" fill="#fff"/></svg>`})}).addTo(mmap);
+
+// toggles
+document.getElementById("lang").addEventListener("click",e=>{if(!e.target.dataset.lang)return;lang=e.target.dataset.lang;
+  document.querySelectorAll("#lang button").forEach(b=>b.classList.toggle("on",b===e.target));render();});
+document.getElementById("cur").addEventListener("click",e=>{if(!e.target.dataset.cur)return;cur=e.target.dataset.cur;
+  document.querySelectorAll("#cur button").forEach(b=>b.classList.toggle("on",b===e.target));render();});
+
+showImg(); render();
+</script>
+</body>
+</html>

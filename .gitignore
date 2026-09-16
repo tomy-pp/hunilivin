@@ -1,0 +1,7 @@
+# Whitelist: ignore EVERYTHING, then allow only the public web files.
+# This guarantees the sensitive PDFs, roadmap, and raw assets never get published.
+*
+!.gitignore
+!index.html
+!villa.html
+!logo-trim.png

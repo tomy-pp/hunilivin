@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hunilivin — mockup</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand:#f5f4f2; --ink:#161616; --green:#1a1a1a; --green2:#2a2a2a;
+    --gold:#8f8f8f; --muted:#8a8a8a; --line:#e4e4e2; --white:#fff;
+    --avail:#1a1a1a; --booked:#b4b4b4; --soon:#7a7a7a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Jost',-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--sand);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .mockup-flag{position:fixed;bottom:12px;right:12px;z-index:9999;background:var(--ink);
+    color:#fff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    padding:6px 12px;border-radius:20px;opacity:.75}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.015em}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  a{color:inherit}
+
+  /* header */
+  header{position:fixed;top:0;left:0;right:0;z-index:1000;background:transparent;border-bottom:1px solid transparent;
+    transition:background .3s ease,border-color .3s ease}
+  header.scrolled{background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:26px;height:120px}
+  .logo{display:flex;align-items:center;text-decoration:none}
+  .logo img{height:108px;width:auto;display:block;filter:drop-shadow(0 1px 8px rgba(255,255,255,.55))}
+  header.scrolled .logo img{filter:none}
+  footer .logo img{height:92px;filter:brightness(0) invert(1)}
+  .nav .links{display:flex;gap:26px;margin-left:12px}
+  .nav .links a{font-size:16.5px;color:var(--ink);text-decoration:none;opacity:.92;font-weight:500;
+    text-shadow:0 1px 12px rgba(255,255,255,.6)}
+  .nav .links a:hover{opacity:1}
+  header.scrolled .logo,header.scrolled .links a{text-shadow:none}
+  .nav .right{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .pill{border:1px solid var(--line);background:#fff;border-radius:20px;font-size:13px;
+    padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:6px}
+  .pill b{font-weight:600}
+  .toggle{display:inline-flex;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#fff}
+  .toggle button{border:0;background:transparent;padding:6px 11px;font-size:13px;cursor:pointer;color:var(--muted)}
+  .toggle button.on{background:var(--green);color:#fff}
+  .wa{background:#25d366;color:#fff;border:0;border-radius:20px;padding:9px 16px;
+    font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;letter-spacing:.02em}
+  .wa-ic{width:17px;height:17px;fill:currentColor;flex:none}
+
+  /* hero + map */
+  .hero{text-align:center;padding:34px 0 18px}
+  .hero .kicker{text-transform:uppercase;letter-spacing:.22em;font-size:12px;color:var(--gold);font-weight:600}
+  .hero h1{font-size:42px;margin:10px 0 8px;color:var(--green)}
+  .hero p{color:var(--muted);max-width:620px;margin:0 auto;font-size:16px}
+  .map-wrap{position:relative;margin-top:0;overflow:hidden;border-bottom:1px solid var(--line)}
+  .map-title{position:absolute;top:122px;left:0;right:0;z-index:500;text-align:center;pointer-events:none;
+    font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:44px;letter-spacing:-.015em;color:#161616;padding:0 20px;
+    text-shadow:0 2px 24px rgba(255,255,255,.92),0 1px 3px rgba(255,255,255,.9);
+    animation:fadeSoft .9s ease;transition:opacity .5s cubic-bezier(.4,0,.2,1)}
+  .map-sub{position:absolute;bottom:30px;left:0;right:0;z-index:500;text-align:center;pointer-events:none;
+    animation:fadeSoft 1.15s ease;transition:opacity .5s cubic-bezier(.4,0,.2,1)}
+  .map-sub span{font-weight:600;font-size:17px;letter-spacing:.01em;color:#161616;
+    text-shadow:0 2px 18px rgba(255,255,255,.95),0 1px 3px rgba(255,255,255,.95)}
+  .map-title.behind,.map-sub.behind{opacity:0}
+  #map{height:78vh;min-height:520px;width:100%;background:#eaf1f4}
+  .leaflet-control-zoom,.leaflet-control-attribution{display:none!important}
+  .pin svg{filter:drop-shadow(0 3px 4px rgba(0,0,0,.35));transition:transform .15s ease}
+  .pindrop{animation:pinDrop .6s cubic-bezier(.2,.8,.25,1) both}
+  .pin:hover svg{transform:scale(1.15) translateY(-2px)}
+  .leaflet-popup-content{margin:0;width:200px!important}
+  .pin-card{width:200px}
+  .pin-card img{width:100%;height:110px;object-fit:cover;display:block}
+  .pin-card .pc-b{padding:8px 10px 10px}
+  .pin-card h4{font-family:'Fraunces',Georgia,serif;font-size:15px;margin-bottom:2px}
+  .pin-card .loc{font-size:12px;color:var(--muted)}
+  .pin-card .st{font-size:11px;font-weight:700;margin-top:5px;display:inline-block}
+  .st.available{color:var(--avail)} .st.booked{color:var(--booked)} .st.soon{color:var(--soon)}
+  .pin-card .pc-link{margin-top:7px;color:var(--green);font-weight:700;font-size:12px}
+  .card.flash{box-shadow:0 0 0 3px var(--gold),0 14px 30px rgba(31,42,36,.15)}
+
+  /* sections */
+  section{padding:60px 0}
+  .sec-head{text-align:center;margin-bottom:36px}
+  .sec-head .kicker{text-transform:uppercase;letter-spacing:.2em;font-size:12px;color:var(--gold);font-weight:600}
+  .sec-head h2{font-size:30px;color:var(--green);margin-top:6px}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s}
+  .card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(31,42,36,.12)}
+  .card .ph{position:relative;height:190px}
+  .card .ph img{width:100%;height:100%;object-fit:cover;display:block}
+  .badge{position:absolute;top:12px;left:12px;background:#fff;border-radius:20px;
+    font-size:12px;font-weight:700;padding:5px 11px;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+  .dot{width:8px;height:8px;border-radius:50%}
+  .badge.available .dot{background:var(--avail)} .badge.available{color:var(--avail)}
+  .badge.booked .dot{background:var(--booked)} .badge.booked{color:var(--booked)}
+  .badge.soon .dot{background:var(--soon)} .badge.soon{color:var(--soon)}
+  .card .cb{padding:16px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .card h3{font-size:19px}
+  .card .loc{font-size:13px;color:var(--muted)}
+  .card .meta{font-size:13px;color:var(--ink);margin-top:2px}
+  .card .price{font-size:18px;font-weight:700;color:var(--green);margin-top:auto}
+  .card .price small{font-weight:400;font-size:12px;color:var(--muted)}
+  .card .cbtn{margin-top:12px;border:0;border-radius:10px;padding:10px;font-size:14px;
+    font-weight:600;cursor:pointer;background:var(--green);color:#fff}
+  .card.isbooked .cbtn{background:#e7e2d6;color:var(--muted);cursor:not-allowed}
+
+  /* about */
+  .about{background:var(--green);color:#f4efe4}
+  .about .cols{display:grid;grid-template-columns:1.1fr 1fr;gap:44px;align-items:center}
+  .about-logo{height:72px;width:auto;display:block;filter:brightness(0) invert(1);margin-bottom:20px}
+  .about h2{color:#fff;font-size:30px;margin-bottom:14px}
+  .about p{color:#c9c9c9;font-size:15px;margin-bottom:14px}
+  .stats{display:flex;gap:30px;margin-top:22px}
+  .stats .n{font-family:'Fraunces',Georgia,serif;font-size:32px;color:var(--gold);font-weight:700}
+  .stats .l{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#b5b5b5}
+  .about .imgs{height:320px;border-radius:14px;overflow:hidden}
+  .about .imgs img{width:100%;height:100%;object-fit:cover}
+
+  /* testimonials */
+  .tcarousel{position:relative}
+  .tgrid{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;
+    padding:4px 2px 12px;-ms-overflow-style:none;scrollbar-width:none}
+  .tgrid::-webkit-scrollbar{display:none}
+  .tcarousel .tcard{scroll-snap-align:start;flex:0 0 calc((100% - 66px) / 3.25);min-width:260px}
+  .tarrow{position:absolute;top:44%;transform:translateY(-50%);width:46px;height:46px;border:1px solid var(--line);
+    background:#fff;border-radius:50%;cursor:pointer;font-size:20px;line-height:1;color:var(--ink);display:flex;
+    align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(31,42,36,.14);z-index:5;transition:transform .15s}
+  .tarrow:hover{transform:translateY(-50%) scale(1.09)}
+  .tarrow.prev{left:-16px} .tarrow.next{right:-16px}
+  .tcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px}
+  .stars{color:var(--gold);letter-spacing:2px;margin-bottom:10px}
+  .tcard p{font-size:14px;color:#3a423b}
+  .tcard .who{display:flex;align-items:center;gap:10px;margin-top:14px}
+  .tcard .who img{width:38px;height:38px;border-radius:50%;object-fit:cover}
+  .tcard .who b{font-size:14px} .tcard .who span{font-size:12px;color:var(--muted);display:block}
+  .tcard .tsrc{margin-left:auto;align-self:center;font-size:11px;color:var(--muted);border:1px solid var(--line);
+    border-radius:20px;padding:3px 10px;white-space:nowrap}
+
+  /* contact */
+  .contact{background:#ededeb;text-align:center}
+  .cbtns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  .cbtns a{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 22px;
+    text-decoration:none;font-weight:600;font-size:15px;display:flex;gap:9px;align-items:center}
+  .cbtns .cic{width:20px;height:20px;fill:currentColor;flex:none}
+  .cbtns a.cbtn-wa{background:#25d366;color:#fff;border-color:#25d366}
+  .cbtns a.cbtn-ig{color:#fff;border-color:transparent;
+    background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)}
+  .contact .info{color:var(--muted);font-size:14px;margin-top:22px}
+
+  footer{background:var(--ink);color:#b3b3b3;padding:34px 0;font-size:13px}
+  footer .fx{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+  footer .logo{color:#fff}
+
+  /* trust strip */
+  .trust{background:#fff;border-bottom:1px solid var(--line)}
+  .trust-row{display:flex;flex-wrap:wrap;justify-content:center;gap:16px 46px;padding:26px 24px}
+  .trust-item{text-align:center;min-width:92px}
+  .trust-item b{display:block;font-family:'Fraunces',Georgia,serif;font-size:24px;color:var(--ink)}
+  .trust-item span{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+  /* villa card location + urgency */
+  .card .near{font-size:12.5px;color:var(--muted)}
+  .urgency{color:var(--muted);font-size:14px;margin-top:8px}
+  /* how it works */
+  .steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .step{background:#fff;border:1px solid var(--line);border-radius:16px;padding:30px 24px;text-align:center}
+  .step .num{width:46px;height:46px;border-radius:50%;background:var(--ink);color:#fff;font-family:'Fraunces',serif;
+    font-size:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+  .step h3{font-size:20px;margin-bottom:8px}
+  .step p{font-size:14px;color:var(--muted)}
+  /* founder */
+  .founder{display:flex;align-items:center;gap:14px;margin-top:26px;border-top:1px solid rgba(255,255,255,.15);padding-top:22px}
+  .founder img{width:62px;height:62px;border-radius:50%;object-fit:cover}
+  .founder b{color:#fff;font-size:15px;display:block}
+  .founder span{color:#b5b5b5;font-size:13px}
+  /* experience / video */
+  .exp-inner{position:relative;height:420px;overflow:hidden}
+  .exp-inner>img{width:100%;height:100%;object-fit:cover;filter:grayscale(.15) brightness(.72)}
+  .exp-cap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:16px;cursor:pointer;text-align:center;padding:0 20px}
+  .exp-cap .kicker{color:#fff;text-transform:uppercase;letter-spacing:.2em;font-size:12px;font-weight:600;opacity:.9}
+  .exp-cap h2{color:#fff;font-size:32px}
+  .exp-cap .play{width:78px;height:78px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;
+    align-items:center;justify-content:center;transition:transform .2s}
+  .exp-cap:hover .play{transform:scale(1.08)}
+  .exp-cap .play svg{width:26px;height:26px;fill:var(--ink);margin-left:4px}
+  /* instagram */
+  .ig-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+  .ig-grid a{aspect-ratio:1;overflow:hidden;border-radius:10px;display:block}
+  .ig-grid img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+  .ig-grid a:hover img{transform:scale(1.08)}
+  .ig-follow{display:flex;gap:9px;align-items:center;margin:26px auto 0;justify-content:center;width:max-content;
+    color:#fff;border-radius:12px;padding:12px 22px;text-decoration:none;font-weight:600;
+    background:linear-gradient(45deg,#f09433,#dc2743,#bc1888)}
+  .ig-follow .cic{width:20px;height:20px;fill:#fff}
+  /* faq */
+  .faq-list{max-width:820px;margin:0 auto}
+  .faq-item{border-bottom:1px solid var(--line)}
+  .faq-q{width:100%;background:none;border:0;padding:20px 4px;font-size:17px;font-weight:600;color:var(--ink);
+    display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left;font-family:inherit}
+  .faq-q span{font-size:24px;color:var(--muted);transition:transform .2s;flex:none;margin-left:16px;line-height:1}
+  .faq-item.open .faq-q span{transform:rotate(45deg)}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;color:var(--muted);font-size:15px}
+  .faq-item.open .faq-a{max-height:260px}
+  .faq-a p{padding:0 4px 20px}
+  /* inquiry form */
+  .inquiry{background:#ededeb}
+  .inq-form{max-width:640px;margin:0 auto;display:grid;gap:14px}
+  .inq-form input,.inq-form textarea,.inq-form select{width:100%;padding:14px 16px;border:1px solid var(--line);
+    border-radius:10px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink)}
+  .inq-form .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .inq-form textarea{min-height:100px;resize:vertical}
+  .inq-form button{background:#25d366;color:#fff;border:0;border-radius:12px;padding:15px;font-size:16px;
+    font-weight:600;cursor:pointer;display:flex;gap:9px;align-items:center;justify-content:center}
+  .inq-form button .cic{width:20px;height:20px;fill:#fff}
+  .inq-note{text-align:center;color:var(--muted);font-size:13px;margin-top:4px}
+  /* floating whatsapp */
+  .fab-wa{position:fixed;right:22px;bottom:22px;z-index:1200;width:60px;height:60px;border-radius:50%;
+    background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+  .fab-wa svg{width:32px;height:32px;fill:#fff}
+
+  @media(max-width:820px){
+    .grid,.tgrid{grid-template-columns:1fr}
+    .about .cols{grid-template-columns:1fr}
+    .nav .links{display:none}
+    .hero h1{font-size:32px}
+    .map-title{font-size:32px}
+    .steps-row{grid-template-columns:1fr}
+    .ig-grid{grid-template-columns:repeat(3,1fr)}
+    .inq-form .row{grid-template-columns:1fr}
+    .exp-inner{height:300px}
+    .trust-row{gap:14px 24px}
+  }
+
+  /* animations */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+  @keyframes fadeSoft{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  @keyframes pinDrop{0%{opacity:0;transform:translateY(-40px)}60%{transform:translateY(3px)}100%{opacity:1;transform:none}}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.6)}70%{box-shadow:0 0 0 15px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
+  .wa{animation:pulse 2s infinite}
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    .reveal,.pindrop,.wa,.map-title,.map-sub{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo"><img src="logo-trim.png" alt="Hunilivin" /></div>
+    <div class="links">
+      <a href="#villas" data-t="nav_villas">Villas</a>
+      <a href="#about" data-t="nav_about">About</a>
+      <a href="#reviews" data-t="nav_reviews">Reviews</a>
+      <a href="#contact" data-t="nav_contact">Contact</a>
+    </div>
+    <div class="right">
+      <div class="toggle" id="lang">
+        <button data-lang="en" class="on">EN</button>
+        <button data-lang="id">ID</button>
+      </div>
+      <div class="toggle" id="cur">
+        <button data-cur="IDR" class="on">IDR</button>
+        <button data-cur="USD">USD</button>
+      </div>
+      <button class="wa" onclick="waGeneral()"><svg class="wa-ic" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.2c-7.06 0-12.79 5.73-12.79 12.79 0 2.25.59 4.45 1.71 6.39L3.2 28.8l6.6-1.73a12.73 12.73 0 0 0 6.2 1.58c7.06 0 12.79-5.73 12.79-12.79S23.06 3.2 16 3.2zm0 23.31a10.5 10.5 0 0 1-5.36-1.47l-.38-.23-3.92 1.03 1.05-3.82-.25-.39a10.48 10.48 0 0 1-1.61-5.58c0-5.86 4.77-10.63 10.64-10.63a10.56 10.56 0 0 1 10.63 10.63c0 5.87-4.77 10.64-10.63 10.64zm5.83-7.96c-.32-.16-1.89-.93-2.18-1.04-.29-.11-.5-.16-.72.16-.21.32-.82 1.04-1.01 1.25-.19.21-.37.24-.69.08-.32-.16-1.35-.5-2.57-1.59-.95-.85-1.59-1.9-1.78-2.22-.19-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.72-1.74-.99-2.38-.26-.62-.53-.54-.72-.55h-.61c-.21 0-.56.08-.85.4-.29.32-1.11 1.09-1.11 2.66 0 1.57 1.14 3.08 1.3 3.29.16.21 2.25 3.43 5.44 4.81.76.33 1.35.53 1.81.68.76.24 1.45.21 2 .13.61-.09 1.89-.77 2.16-1.52.27-.75.27-1.39.19-1.52-.08-.13-.29-.21-.61-.37z"/></svg><span data-t="wa">WhatsApp</span></button>
+    </div>
+  </div>
+</header>
+
+<div class="map-wrap">
+  <div class="map-title" data-t="hero_title">Where do you wanna stay?</div>
+  <div id="map"></div>
+  <div class="map-sub"><span data-t="hero_sub">Hover a pin to preview each villa.</span></div>
+</div>
+
+<section class="trust">
+  <div class="wrap trust-row">
+    <div class="trust-item"><b>4.9★</b><span data-t="tr_rating">Guest rating</span></div>
+    <div class="trust-item"><b>500+</b><span data-t="tr_guests">Happy guests</span></div>
+    <div class="trust-item"><b>&lt;15m</b><span data-t="tr_reply">Avg. reply</span></div>
+    <div class="trust-item"><b>EN·ID</b><span data-t="tr_lang">We speak</span></div>
+    <div class="trust-item"><b>100%</b><span data-t="tr_local">Locally managed</span></div>
+  </div>
+</section>
+
+<section id="villas">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker" data-t="villas_kicker">Our collection</div>
+      <h2 data-t="villas_title">Available Villas</h2>
+      <p class="urgency" id="urgency"></p>
+    </div>
+    <div class="grid" id="cards"></div>
+  </div>
+</section>
+
+<section class="steps" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker" data-t="steps_kicker">Simple &amp; transparent</div>
+      <h2 data-t="steps_title">How booking works</h2>
+    </div>
+    <div class="steps-row">
+      <div class="step"><div class="num">1</div><h3 data-t="step1_t">Chat with us</h3><p data-t="step1_p"></p></div>
+      <div class="step"><div class="num">2</div><h3 data-t="step2_t">Check your dates</h3><p data-t="step2_p"></p></div>
+      <div class="step"><div class="num">3</div><h3 data-t="step3_t">Confirm &amp; stay</h3><p data-t="step3_p"></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="wrap cols">
+    <div>
+      <img class="about-logo" src="logo-trim.png" alt="Hunilivin" />
+      <div class="kicker" style="color:var(--gold);text-transform:uppercase;letter-spacing:.2em;font-size:12px;font-weight:600" data-t="about_kicker">About us</div>
+      <h2 data-t="about_title">Villas managed with care</h2>
+      <p data-t="about_p1">Hunilivin is a boutique villa management team in Bali. We look after a small, curated collection of private villas — so every guest gets a home that's cared for, and every owner gets peace of mind.</p>
+      <p data-t="about_p2">From your first message to your last night, we handle everything personally.</p>
+      <div class="stats">
+        <div><div class="n">9</div><div class="l" data-t="stat_villas">Villas</div></div>
+        <div><div class="n">6</div><div class="l" data-t="stat_areas">Areas</div></div>
+        <div><div class="n">4.9★</div><div class="l" data-t="stat_rating">Guest rating</div></div>
+      </div>
+      <div class="founder">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=70" alt="Founder" />
+        <div><b>Putu Wirawan</b><span data-t="founder_role">Founder · Hunilivin</span></div>
+      </div>
+    </div>
+    <div class="imgs">
+      <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=70" alt="villa" />
+    </div>
+  </div>
+</section>
+
+<section class="experience">
+  <div class="exp-inner">
+    <img src="https://images.unsplash.com/photo-1602002418082-a4443e081dd1?auto=format&fit=crop&w=1600&q=70" alt="Villa experience" />
+    <div class="exp-cap">
+      <div class="kicker" data-t="exp_kicker">Life at our villas</div>
+      <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <h2 data-t="exp_title">Take a tour</h2>
+    </div>
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker" data-t="rev_kicker">Kind words</div>
+      <h2 data-t="rev_title">What Guests Say</h2>
+      <p class="urgency" data-t="rev_sub">★ 4.9 average · 120+ reviews on Google &amp; Airbnb</p>
+    </div>
+    <div class="tcarousel">
+      <button class="tarrow prev" onclick="scrollReviews(-1)" aria-label="Previous">‹</button>
+      <div class="tgrid" id="reviews-grid"></div>
+      <button class="tarrow next" onclick="scrollReviews(1)" aria-label="Next">›</button>
+    </div>
+  </div>
+</section>
+
+<section id="instagram">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker" data-t="ig_kicker">@hunilivin</div>
+      <h2 data-t="ig_title">Follow our journey</h2>
+    </div>
+    <div class="ig-grid" id="ig-grid"></div>
+    <a class="ig-follow" href="https://instagram.com/hunilivin" target="_blank" rel="noopener">
+      <svg class="cic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.31-1.46.72-2.13 1.38C1.35 2.68.94 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.72 1.46 1.38 2.13.67.66 1.34 1.07 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.31 1.46-.72 2.13-1.38.66-.67 1.07-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.31-.79-.72-1.46-1.38-2.13-.67-.66-1.34-1.07-2.13-1.38-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4zm6.41-10.4a1.44 1.44 0 1 0 1.44 1.44 1.44 1.44 0 0 0-1.44-1.44z"/></svg>
+      <span data-t="ig_follow">Follow on Instagram</span>
+    </a>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker" data-t="faq_kicker">Good to know</div>
+      <h2 data-t="faq_title">Frequently asked questions</h2>
+    </div>
+    <div class="faq-list" id="faq-list"></div>
+  </div>
+</section>
+
+<section class="inquiry" id="inquiry">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker" data-t="inq_kicker">Leave a message</div>
+      <h2 data-t="inq_title">Send an inquiry</h2>
+    </div>
+    <form class="inq-form" onsubmit="return sendInquiry(event)">
+      <div class="row">
+        <input id="inq-name" data-ph="ph_name" required />
+        <input id="inq-dates" data-ph="ph_dates" />
+      </div>
+      <select id="inq-villa"></select>
+      <textarea id="inq-msg" data-ph="ph_msg"></textarea>
+      <button type="submit"><svg class="cic" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.2c-7.06 0-12.79 5.73-12.79 12.79 0 2.25.59 4.45 1.71 6.39L3.2 28.8l6.6-1.73a12.73 12.73 0 0 0 6.2 1.58c7.06 0 12.79-5.73 12.79-12.79S23.06 3.2 16 3.2zm0 23.31a10.5 10.5 0 0 1-5.36-1.47l-.38-.23-3.92 1.03 1.05-3.82-.25-.39a10.48 10.48 0 0 1-1.61-5.58c0-5.86 4.77-10.63 10.64-10.63a10.56 10.56 0 0 1 10.63 10.63c0 5.87-4.77 10.64-10.63 10.64zm5.83-7.96c-.32-.16-1.89-.93-2.18-1.04-.29-.11-.5-.16-.72.16-.21.32-.82 1.04-1.01 1.25-.19.21-.37.24-.69.08-.32-.16-1.35-.5-2.57-1.59-.95-.85-1.59-1.9-1.78-2.22-.19-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.72-1.74-.99-2.38-.26-.62-.53-.54-.72-.55h-.61c-.21 0-.56.08-.85.4-.29.32-1.11 1.09-1.11 2.66 0 1.57 1.14 3.08 1.3 3.29.16.21 2.25 3.43 5.44 4.81.76.33 1.35.53 1.81.68.76.24 1.45.21 2 .13.61-.09 1.89-.77 2.16-1.52.27-.75.27-1.39.19-1.52-.08-.13-.29-.21-.61-.37z"/></svg><span data-t="inq_send">Send via WhatsApp</span></button>
+      <div class="inq-note" data-t="inq_note"></div>
+    </form>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker" data-t="con_kicker">Say hello</div>
+      <h2 data-t="con_title">Contact Us</h2>
+    </div>
+    <div class="cbtns">
+      <a href="#" class="cbtn-wa" onclick="return waGeneral()"><svg class="cic" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.2c-7.06 0-12.79 5.73-12.79 12.79 0 2.25.59 4.45 1.71 6.39L3.2 28.8l6.6-1.73a12.73 12.73 0 0 0 6.2 1.58c7.06 0 12.79-5.73 12.79-12.79S23.06 3.2 16 3.2zm0 23.31a10.5 10.5 0 0 1-5.36-1.47l-.38-.23-3.92 1.03 1.05-3.82-.25-.39a10.48 10.48 0 0 1-1.61-5.58c0-5.86 4.77-10.63 10.64-10.63a10.56 10.56 0 0 1 10.63 10.63c0 5.87-4.77 10.64-10.63 10.64zm5.83-7.96c-.32-.16-1.89-.93-2.18-1.04-.29-.11-.5-.16-.72.16-.21.32-.82 1.04-1.01 1.25-.19.21-.37.24-.69.08-.32-.16-1.35-.5-2.57-1.59-.95-.85-1.59-1.9-1.78-2.22-.19-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.72-1.74-.99-2.38-.26-.62-.53-.54-.72-.55h-.61c-.21 0-.56.08-.85.4-.29.32-1.11 1.09-1.11 2.66 0 1.57 1.14 3.08 1.3 3.29.16.21 2.25 3.43 5.44 4.81.76.33 1.35.53 1.81.68.76.24 1.45.21 2 .13.61-.09 1.89-.77 2.16-1.52.27-.75.27-1.39.19-1.52-.08-.13-.29-.21-.61-.37z"/></svg><span data-t="con_wa">Chat on WhatsApp</span></a>
+      <a href="https://instagram.com/hunilivin" target="_blank" rel="noopener" class="cbtn-ig"><svg class="cic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.31-1.46.72-2.13 1.38C1.35 2.68.94 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.72 1.46 1.38 2.13.67.66 1.34 1.07 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.31 1.46-.72 2.13-1.38.66-.67 1.07-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.31-.79-.72-1.46-1.38-2.13-.67-.66-1.34-1.07-2.13-1.38-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4zm6.41-10.4a1.44 1.44 0 1 0 1.44 1.44 1.44 1.44 0 0 0-1.44-1.44z"/></svg>Instagram</a>
+      <a href="mailto:hello@hunilivin.com">✉️ Email</a>
+    </div>
+    <div class="info" data-t="con_info">Bali, Indonesia · Available 9am – 9pm (WITA)</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap fx">
+    <div class="logo"><img src="logo-trim.png" alt="Hunilivin" /></div>
+    <div data-t="foot">© 2026 Hunilivin · Villa management, Bali</div>
+    <div>EN / ID · IDR / USD</div>
+  </div>
+</footer>
+
+<a class="fab-wa" href="#" onclick="return waGeneral()" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.2c-7.06 0-12.79 5.73-12.79 12.79 0 2.25.59 4.45 1.71 6.39L3.2 28.8l6.6-1.73a12.73 12.73 0 0 0 6.2 1.58c7.06 0 12.79-5.73 12.79-12.79S23.06 3.2 16 3.2zm0 23.31a10.5 10.5 0 0 1-5.36-1.47l-.38-.23-3.92 1.03 1.05-3.82-.25-.39a10.48 10.48 0 0 1-1.61-5.58c0-5.86 4.77-10.63 10.64-10.63a10.56 10.56 0 0 1 10.63 10.63c0 5.87-4.77 10.64-10.63 10.64zm5.83-7.96c-.32-.16-1.89-.93-2.18-1.04-.29-.11-.5-.16-.72.16-.21.32-.82 1.04-1.01 1.25-.19.21-.37.24-.69.08-.32-.16-1.35-.5-2.57-1.59-.95-.85-1.59-1.9-1.78-2.22-.19-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.72-1.74-.99-2.38-.26-.62-.53-.54-.72-.55h-.61c-.21 0-.56.08-.85.4-.29.32-1.11 1.09-1.11 2.66 0 1.57 1.14 3.08 1.3 3.29.16.21 2.25 3.43 5.44 4.81.76.33 1.35.53 1.81.68.76.24 1.45.21 2 .13.61-.09 1.89-.77 2.16-1.52.27-.75.27-1.39.19-1.52-.08-.13-.29-.21-.61-.37z"/></svg>
+</a>
+<div class="mockup-flag">Mockup · Hunilivin</div>
+
+<script>
+/* ---------- data ---------- */
+const RATE = 16000; // 1 USD
+const villas = [
+  {name:"Uluwatu Cliff Villa", area:"Uluwatu", br:3, price:4500000, status:"available", lat:-8.829, lng:115.087, img:"https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=70"},
+  {name:"Canggu Loft Villa", area:"Canggu", br:2, price:3200000, status:"booked", lat:-8.647, lng:115.138, img:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=70"},
+  {name:"Ubud Jungle Villa", area:"Ubud", br:4, price:5800000, status:"available", lat:-8.507, lng:115.263, img:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=70"},
+  {name:"Seminyak Beach House", area:"Seminyak", br:3, price:4000000, status:"available", lat:-8.690, lng:115.168, img:"https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=70"},
+  {name:"Bingin Surf Villa", area:"Bingin", br:2, price:2800000, status:"booked", lat:-8.808, lng:115.113, img:"https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=800&q=70"},
+  {name:"Ungasan Ocean Villa", area:"Ungasan", br:5, price:8500000, status:"available", lat:-8.816, lng:115.147, img:"https://images.unsplash.com/photo-1601918774946-25832a4be0d6?auto=format&fit=crop&w=800&q=70"},
+  {name:"Nusa Dua Villa", area:"Nusa Dua", br:3, price:0, status:"soon", lat:-8.800, lng:115.228, img:"https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=800&q=70"},
+  {name:"Pererenan Villa", area:"Pererenan", br:2, price:0, status:"soon", lat:-8.645, lng:115.120, img:"https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=800&q=70"},
+  {name:"Sanur Garden Villa", area:"Sanur", br:4, price:0, status:"soon", lat:-8.688, lng:115.262, img:"https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=800&q=70"},
+];
+
+const reviews = [
+  {t_en:"Absolutely stunning villa and the team replied within minutes. Felt like a second home.", t_id:"Villa-nya luar biasa dan timnya bales dalam hitungan menit. Berasa rumah kedua.", who:"Sophie · Australia", img:"https://i.pravatar.cc/80?img=45"},
+  {t_en:"Booking was seamless even from abroad. The map made it so easy to pick a location.", t_id:"Booking gampang banget walau dari luar negeri. Petanya bikin milih lokasi jadi simpel.", who:"Lukas · Germany", img:"https://i.pravatar.cc/80?img=12"},
+  {t_en:"Clean, beautiful, and exactly like the photos. We'll be back next year.", t_id:"Bersih, cantik, dan persis kayak foto. Tahun depan pasti balik lagi.", who:"Maya · Jakarta", img:"https://i.pravatar.cc/80?img=32"},
+  {t_en:"The whole booking felt personal and effortless. Highly recommend Hunilivin.", t_id:"Seluruh proses booking terasa personal dan gampang banget. Sangat rekomendasi Hunilivin.", who:"Émile · France", img:"https://i.pravatar.cc/80?img=15"},
+  {t_en:"Beautiful villa, spotless, and the team was always one message away.", t_id:"Villa cantik, bersih banget, dan timnya selalu siap dibalas dalam satu pesan.", who:"Hana · Surabaya", img:"https://i.pravatar.cc/80?img=5"},
+  {t_en:"We found our villa on the map in seconds and booked the same day.", t_id:"Kami nemu villa lewat peta dalam hitungan detik dan langsung booking hari itu juga.", who:"Mark · UK", img:"https://i.pravatar.cc/80?img=8"},
+];
+
+// [min to nearest beach, min from airport] per villa (index matches villas)
+const NEAR=[[5,45],[7,35],[40,60],[3,30],[4,50],[8,40],[5,20],[6,40],[4,30]];
+const igImgs=villas.slice(0,6).map(v=>v.img);
+const faqs=[
+  {q_en:"How do I book a villa?",a_en:"Just message us on WhatsApp with your dates and the villa you like. We reply within 15 minutes on average, confirm availability, and send a simple quote.",
+   q_id:"Gimana cara booking villa?",a_id:"Cukup chat WhatsApp dengan tanggal & villa pilihanmu. Kami balas rata-rata dalam 15 menit, cek ketersediaan, lalu kirim penawaran simpel."},
+  {q_en:"Is airport pickup available?",a_en:"Yes — we can arrange a private airport transfer for any villa. Just share your flight details.",
+   q_id:"Ada jemputan bandara?",a_id:"Ada — kami bisa atur antar-jemput bandara privat untuk semua villa. Kasih tau detail penerbanganmu aja."},
+  {q_en:"What's included in the price?",a_en:"Daily cleaning, Wi-Fi and all utilities are included. Extras like breakfast or a private chef can be added on request.",
+   q_id:"Apa saja yang termasuk harga?",a_id:"Bersih-bersih harian, Wi-Fi, dan semua utilitas sudah termasuk. Tambahan seperti sarapan atau chef privat bisa diminta."},
+  {q_en:"Do you speak English?",a_en:"Yes — our team speaks both English and Indonesian, and we're happy to help before, during and after your stay.",
+   q_id:"Apakah bisa bahasa Inggris?",a_id:"Bisa — tim kami berbahasa Inggris & Indonesia, siap bantu sebelum, selama, dan sesudah menginap."},
+  {q_en:"What is the cancellation policy?",a_en:"Free cancellation up to 14 days before check-in. We're always transparent about the terms before you pay.",
+   q_id:"Bagaimana kebijakan pembatalan?",a_id:"Pembatalan gratis sampai 14 hari sebelum check-in. Kami selalu transparan soal ketentuannya sebelum kamu bayar."},
+];
+
+/* ---------- i18n ---------- */
+const T = {
+  nav_villas:{en:"Villas",id:"Villa"}, nav_about:{en:"About",id:"Tentang"},
+  nav_reviews:{en:"Reviews",id:"Ulasan"}, nav_contact:{en:"Contact",id:"Kontak"},
+  wa:{en:"WhatsApp",id:"WhatsApp"},
+  hero_kicker:{en:"Villa management · Bali",id:"Manajemen villa · Bali"},
+  hero_title:{en:"Where do you wanna stay?",id:"Mau menginap di mana?"},
+  hero_sub:{en:"Hover a pin to preview each villa.",id:"Arahkan kursor ke pin untuk pratinjau villa."},
+  villas_kicker:{en:"Our collection",id:"Koleksi kami"},
+  villas_title:{en:"Available Villas",id:"Villa Tersedia"},
+  about_kicker:{en:"About us",id:"Tentang kami"},
+  about_title:{en:"Villas managed with care",id:"Villa yang dikelola sepenuh hati"},
+  about_p1:{en:"Hunilivin is a boutique villa management team in Bali. We look after a small, curated collection of private villas — so every guest gets a home that's cared for, and every owner gets peace of mind.",id:"Hunilivin adalah tim manajemen villa butik di Bali. Kami merawat koleksi kecil villa pribadi pilihan — agar setiap tamu mendapat rumah yang terawat, dan setiap pemilik merasa tenang."},
+  about_p2:{en:"From your first message to your last night, we handle everything personally.",id:"Dari pesan pertama sampai malam terakhir, kami urus semuanya secara personal."},
+  stat_villas:{en:"Villas",id:"Villa"}, stat_areas:{en:"Areas",id:"Area"}, stat_rating:{en:"Guest rating",id:"Rating tamu"},
+  rev_kicker:{en:"Kind words",id:"Kata mereka"},
+  rev_title:{en:"What Guests Say",id:"Kata Para Tamu"},
+  rev_sub:{en:"★ 4.9 average · 120+ reviews on Google & Airbnb",id:"★ Rata-rata 4.9 · 120+ ulasan di Google & Airbnb"},
+  con_kicker:{en:"Say hello",id:"Sapa kami"},
+  con_title:{en:"Contact Us",id:"Hubungi Kami"},
+  con_wa:{en:"Chat on WhatsApp",id:"Chat via WhatsApp"},
+  con_info:{en:"Bali, Indonesia · Available 9am – 9pm (WITA)",id:"Bali, Indonesia · Buka 09.00 – 21.00 (WITA)"},
+  foot:{en:"© 2026 Hunilivin · Villa management, Bali",id:"© 2026 Hunilivin · Manajemen villa, Bali"},
+  tr_rating:{en:"Guest rating",id:"Rating tamu"},
+  tr_guests:{en:"Happy guests",id:"Tamu puas"},
+  tr_reply:{en:"Avg. reply",id:"Rata-rata balas"},
+  tr_lang:{en:"We speak",id:"Bahasa kami"},
+  tr_local:{en:"Locally managed",id:"Dikelola lokal"},
+  steps_kicker:{en:"Simple & transparent",id:"Simpel & transparan"},
+  steps_title:{en:"How booking works",id:"Cara booking-nya"},
+  step1_t:{en:"Chat with us",id:"Chat dengan kami"},
+  step2_t:{en:"Check your dates",id:"Cek tanggalmu"},
+  step3_t:{en:"Confirm & stay",id:"Konfirmasi & menginap"},
+  step1_p:{en:"Message us on WhatsApp — tell us your dates and the villa you like.",id:"Chat kami di WhatsApp — sebutin tanggal & villa yang kamu suka."},
+  step2_p:{en:"We check real-time availability and send a clear quote — no hidden fees.",id:"Kami cek ketersediaan real-time & kirim penawaran jelas — tanpa biaya tersembunyi."},
+  step3_p:{en:"Secure it with a deposit. We handle everything until check-out.",id:"Amankan dengan deposit. Sisanya kami urus sampai check-out."},
+  founder_role:{en:"Founder · Hunilivin",id:"Pendiri · Hunilivin"},
+  exp_kicker:{en:"Life at our villas",id:"Kehidupan di villa kami"},
+  exp_title:{en:"Take a tour",id:"Lihat langsung"},
+  ig_kicker:{en:"@hunilivin",id:"@hunilivin"},
+  ig_title:{en:"Follow our journey",id:"Ikuti keseharian kami"},
+  ig_follow:{en:"Follow on Instagram",id:"Ikuti di Instagram"},
+  faq_kicker:{en:"Good to know",id:"Perlu diketahui"},
+  faq_title:{en:"Frequently asked questions",id:"Pertanyaan yang sering ditanya"},
+  inq_kicker:{en:"Leave a message",id:"Tinggalkan pesan"},
+  inq_title:{en:"Send an inquiry",id:"Kirim pertanyaan"},
+  inq_send:{en:"Send via WhatsApp",id:"Kirim via WhatsApp"},
+  inq_note:{en:"Your details open a pre-filled WhatsApp chat — nothing is stored, no cost.",id:"Datamu membuka chat WhatsApp yang sudah terisi — tanpa disimpan, tanpa biaya."},
+  ph_name:{en:"Your name",id:"Nama kamu"},
+  ph_dates:{en:"Dates (e.g. 3–10 Mar)",id:"Tanggal (mis. 3–10 Mar)"},
+  ph_msg:{en:"Anything else? (optional)",id:"Ada lagi? (opsional)"},
+};
+const STText = {available:{en:"Available",id:"Tersedia"},booked:{en:"Booked",id:"Terisi"},soon:{en:"Coming soon",id:"Segera hadir"}};
+
+let lang="en", cur="IDR";
+
+function fmtPrice(idr){
+  if(!idr) return {main:"—",sub:""};
+  if(cur==="IDR"){
+    return {main:"Rp"+idr.toLocaleString("id-ID"), sub:lang==="en"?"/night":"/malam"};
+  }
+  const usd=Math.round(idr/RATE);
+  return {main:"$"+usd.toLocaleString("en-US"), sub:lang==="en"?"/night":"/malam"};
+}
+
+function renderText(){
+  document.querySelectorAll("[data-t]").forEach(el=>{
+    const k=el.getAttribute("data-t"); if(T[k]) el.textContent=T[k][lang];
+  });
+  document.querySelectorAll("[data-ph]").forEach(el=>{
+    const k=el.getAttribute("data-ph"); if(T[k]) el.placeholder=T[k][lang];
+  });
+  document.documentElement.lang=lang;
+}
+
+function renderCards(){
+  const wrap=document.getElementById("cards"); wrap.innerHTML="";
+  villas.forEach((v,i)=>{
+    const p=fmtPrice(v.price);
+    const stTxt=STText[v.status][lang];
+    const btn = v.status==="booked" ? (lang==="en"?"Booked":"Terisi")
+             : v.status==="soon" ? (lang==="en"?"Notify me":"Beri tahu saya")
+             : (lang==="en"?"Enquire on WhatsApp":"Tanya via WhatsApp");
+    const card=document.createElement("div");
+    card.id="card-"+i;
+    card.className="card"+(v.status==="booked"?" isbooked":"");
+    card.style.cursor="pointer";
+    card.addEventListener("click",()=>goVilla(i));
+    card.innerHTML=`
+      <div class="ph">
+        <img src="${v.img}" alt="${v.name}" loading="lazy"/>
+        <div class="badge ${v.status}"><span class="dot"></span>${stTxt}</div>
+      </div>
+      <div class="cb">
+        <h3>${v.name}</h3>
+        <div class="loc">${v.area}, Bali</div>
+        <div class="near">${NEAR[i][0]} ${lang==="en"?"min to beach":"mnt ke pantai"} · ${NEAR[i][1]} ${lang==="en"?"min from airport":"mnt dari bandara"}</div>
+        <div class="meta">${v.br} ${lang==="en"?"bedrooms":"kamar"}</div>
+        <div class="price">${p.main} <small>${p.sub}</small></div>
+        <button class="cbtn" onclick="waVilla(event,${i})">${btn}</button>
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+
+function scrollReviews(dir){
+  const g=document.getElementById("reviews-grid");
+  const card=g.querySelector(".tcard");
+  const step=card?card.getBoundingClientRect().width+22:320;
+  g.scrollBy({left:dir*step,behavior:"smooth"});
+}
+window.scrollReviews=scrollReviews;
+const REVIEW_SRC=["Google","Airbnb","Google","Booking.com","Google","Airbnb"];
+function renderReviews(){
+  const g=document.getElementById("reviews-grid"); g.innerHTML="";
+  reviews.forEach((r,i)=>{
+    const el=document.createElement("div"); el.className="tcard";
+    el.innerHTML=`<div class="stars">★★★★★</div>
+      <p>"${lang==="en"?r.t_en:r.t_id}"</p>
+      <div class="who"><img src="${r.img}" alt=""/><div><b>${r.who.split(" · ")[0]}</b><span>${r.who.split(" · ")[1]}</span></div><span class="tsrc">${REVIEW_SRC[i%REVIEW_SRC.length]}</span></div>`;
+    g.appendChild(el);
+  });
+}
+
+/* ---------- map ---------- */
+let map, markers=[];
+function initMap(){
+  map=L.map("map",{scrollWheelZoom:false,zoomControl:false,attributionControl:false,zoomSnap:0,zoomDelta:0.4}).setView([-8.72,115.17],11);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",{
+    attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:"abcd", maxZoom:20, keepBuffer:4}).addTo(map);
+  // smooth pinch-to-zoom: CSS-scale the live tiles during the gesture (never blank),
+  // then commit the real zoom once the pinch ends.
+  const mc=map.getContainer();
+  let baseZoom=null, originPt=null, curScale=1, commitTimer=null;
+  function beginVisual(pt){ baseZoom=map.getZoom(); originPt=pt; curScale=1;
+    mc.style.transformOrigin=pt.x+"px "+pt.y+"px"; }
+  function applyVisual(scale){ curScale=scale; mc.style.transform="scale("+scale+")"; }
+  function commitVisual(){
+    if(baseZoom==null) return;
+    const scale=curScale, pt=originPt, bz=baseZoom;
+    const ll=map.containerPointToLatLng(pt);
+    mc.style.transform=""; mc.style.transformOrigin="";
+    baseZoom=null; originPt=null; curScale=1;
+    map.setZoomAround(ll, bz + Math.log2(scale), {animate:false});
+  }
+  // Safari: trackpad pinch = gesture events
+  mc.addEventListener("gesturestart",e=>{ e.preventDefault(); beginVisual(map.mouseEventToContainerPoint(e)); });
+  mc.addEventListener("gesturechange",e=>{ e.preventDefault(); if(baseZoom==null) return; applyVisual(e.scale); });
+  mc.addEventListener("gestureend",e=>{ e.preventDefault(); commitVisual(); });
+  // Chrome/Firefox: trackpad pinch = ctrl+wheel (scale live, commit shortly after it stops)
+  mc.addEventListener("wheel",e=>{
+    if(!e.ctrlKey) return;
+    e.preventDefault();
+    if(baseZoom==null) beginVisual(map.mouseEventToContainerPoint(e));
+    applyVisual(curScale*Math.exp(-e.deltaY*0.01));
+    clearTimeout(commitTimer); commitTimer=setTimeout(commitVisual,200);
+  },{passive:false});
+  const pinSVG=`<svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 0C7 0 .5 6.4.5 14.3.5 25 15 40 15 40s14.5-15 14.5-25.7C29.5 6.4 23 0 15 0z" fill="#d13b30"/>
+      <circle cx="15" cy="14.3" r="5.2" fill="#fff"/></svg>`;
+  villas.forEach((v,i)=>{
+    const icon=L.divIcon({className:"pin",html:`<div class="pindrop" style="animation-delay:${i*70}ms">${pinSVG}</div>`,
+      iconSize:[30,40],iconAnchor:[15,40],popupAnchor:[0,-34]});
+    const m=L.marker([v.lat,v.lng],{icon}).addTo(map);
+    m._villa=v; m._i=i; markers.push(m);
+    m.on("mouseover",()=>m.openPopup());
+    bindPopup(m);
+  });
+  // hero title stays visible; if a villa popup lands on it, move the title out of the way briefly
+  const titleEl=document.querySelector(".map-title"), subEl=document.querySelector(".map-sub");
+  const hit=(a,b)=>!(a.right<b.left||a.left>b.right||a.bottom<b.top||a.top>b.bottom);
+  function syncTitle(pop){
+    titleEl.classList.remove("behind"); subEl.classList.remove("behind");
+    if(!pop) return;
+    const pr=pop.getBoundingClientRect();
+    if(hit(pr,titleEl.getBoundingClientRect())) titleEl.classList.add("behind");
+    if(hit(pr,subEl.getBoundingClientRect())) subEl.classList.add("behind");
+  }
+  map.on("popupopen",e=>syncTitle(e.popup.getElement()));
+  map.on("popupclose",()=>syncTitle(null));
+}
+function bindPopup(m){
+  const v=m._villa, i=m._i; const stTxt=STText[v.status][lang];
+  const label=lang==="en"?"View details":"Lihat detail";
+  m.bindPopup(`<div class="pin-card" style="cursor:pointer" onclick="goVilla(${i})"><img src="${v.img}" alt=""/>
+    <div class="pc-b"><h4>${v.name}</h4><div class="loc">${v.area}, Bali</div>
+    <span class="st ${v.status}">● ${stTxt}</span>
+    <div class="pc-link">${label} →</div></div></div>`,{closeButton:false});
+}
+function goVilla(i){ window.location.href="villa.html?id="+i; }
+
+/* ---------- WhatsApp CTAs ---------- */
+const WA_PHONE="6281234567890"; // TODO: ganti nomor WhatsApp bisnis asli
+function openWA(msg){
+  const url=`https://wa.me/${WA_PHONE}?text=${encodeURIComponent(msg)}`;
+  const w=window.open(url,"_blank"); if(!w) window.location.href=url;
+  return false;
+}
+function waVilla(e,i){
+  e.stopPropagation();
+  const v=villas[i]; if(v.status==="booked") return;
+  const msg=v.status==="soon"
+    ? (lang==="en"?`Hi Hunilivin, please notify me when ${v.name} is available.`:`Halo Hunilivin, tolong beri tahu saya saat ${v.name} tersedia.`)
+    : (lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Is it available?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Apakah tersedia?`);
+  openWA(msg);
+}
+function waGeneral(){
+  return openWA(lang==="en"?"Hi Hunilivin, I'd like to know more about your villas.":"Halo Hunilivin, saya mau tanya-tanya soal villa-nya.");
+}
+window.waVilla=waVilla; window.waGeneral=waGeneral;
+
+function renderFAQ(){
+  const el=document.getElementById("faq-list"); if(!el) return;
+  el.innerHTML=faqs.map((f,i)=>`<div class="faq-item"><button type="button" class="faq-q" onclick="toggleFAQ(${i})">${lang==="en"?f.q_en:f.q_id}<span>+</span></button><div class="faq-a"><p>${lang==="en"?f.a_en:f.a_id}</p></div></div>`).join("");
+}
+function toggleFAQ(i){ const it=document.querySelectorAll("#faq-list .faq-item")[i]; if(it) it.classList.toggle("open"); }
+window.toggleFAQ=toggleFAQ;
+function renderIG(){
+  const g=document.getElementById("ig-grid"); if(!g) return;
+  g.innerHTML=igImgs.map(src=>`<a href="https://instagram.com/hunilivin" target="_blank" rel="noopener"><img src="${src}" alt="Hunilivin on Instagram" loading="lazy"/></a>`).join("");
+}
+function fillVillaSelect(){
+  const s=document.getElementById("inq-villa"); if(!s) return;
+  const cur=s.value;
+  s.innerHTML=`<option value="">${lang==="en"?"Which villa? (optional)":"Villa mana? (opsional)"}</option>`+villas.map(v=>`<option value="${v.name}">${v.name}</option>`).join("");
+  s.value=cur;
+}
+function setUrgency(){
+  const el=document.getElementById("urgency"); if(!el) return;
+  const n=villas.filter(v=>v.status==="available").length;
+  el.textContent=lang==="en"
+    ? `${n} villas available right now — enquire before your dates are taken.`
+    : `${n} villa tersedia sekarang — tanya sebelum tanggalmu keburu diambil.`;
+}
+function sendInquiry(e){
+  e.preventDefault();
+  const name=(document.getElementById("inq-name").value||"").trim();
+  const dates=(document.getElementById("inq-dates").value||"").trim();
+  const villa=document.getElementById("inq-villa").value;
+  const extra=(document.getElementById("inq-msg").value||"").trim();
+  const L=lang==="en";
+  let msg=L?`Hi Hunilivin! My name is ${name||"—"}.`:`Halo Hunilivin! Nama saya ${name||"—"}.`;
+  if(villa) msg+=L?` I'm interested in ${villa}.`:` Saya tertarik dengan ${villa}.`;
+  if(dates) msg+=L?` Dates: ${dates}.`:` Tanggal: ${dates}.`;
+  if(extra) msg+=" "+extra;
+  openWA(msg);
+  return false;
+}
+window.sendInquiry=sendInquiry;
+
+function renderAll(){ renderText(); renderCards(); renderReviews(); renderFAQ(); setUrgency(); fillVillaSelect(); markers.forEach(bindPopup); }
+
+/* ---------- scroll reveal ---------- */
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target);} });
+},{threshold:.12});
+function setupReveals(){
+  document.querySelectorAll(".sec-head, #cards, #reviews-grid, .about .cols, .contact .cbtns, .trust-row, .steps-row, .ig-grid, .faq-list, .inq-form")
+    .forEach(el=>el.classList.add("reveal"));
+  document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+}
+
+/* ---------- toggles ---------- */
+document.getElementById("lang").addEventListener("click",e=>{
+  if(!e.target.dataset.lang) return; lang=e.target.dataset.lang;
+  document.querySelectorAll("#lang button").forEach(b=>b.classList.toggle("on",b===e.target));
+  renderAll();
+});
+document.getElementById("cur").addEventListener("click",e=>{
+  if(!e.target.dataset.cur) return; cur=e.target.dataset.cur;
+  document.querySelectorAll("#cur button").forEach(b=>b.classList.toggle("on",b===e.target));
+  renderCards();
+});
+
+initMap(); renderAll(); renderIG(); setupReveals();
+
+/* header: transparent over map, solid once scrolled */
+const hdr=document.querySelector("header");
+addEventListener("scroll",()=>hdr.classList.toggle("scrolled",scrollY>40),{passive:true});
+</script>
+</body>
+</html>
