@@ -79,7 +79,6 @@
     text-shadow:0 2px 18px rgba(255,255,255,.95),0 1px 3px rgba(255,255,255,.95)}
   .map-title.behind,.map-sub.behind{opacity:0}
   #map{height:78vh;min-height:520px;width:100%;background:#eaf1f4}
-  .leaflet-tile{filter:saturate(.58) brightness(1.05) contrast(.93)}
   .leaflet-control-zoom{margin:132px 0 0 16px!important;border:none!important;border-radius:10px!important;
     overflow:hidden;box-shadow:0 4px 14px rgba(31,42,36,.16)!important}
   .leaflet-control-zoom a{color:#161616!important;border:none!important;font-weight:500}
@@ -311,7 +310,7 @@
   <div class="wrap">
     <div class="sec-head">
       <div class="kicker" data-t="villas_kicker">Our collection</div>
-      <h2 data-t="villas_title">Available Villas</h2>
+      <h2 data-t="villas_title">Our Villas</h2>
       <p class="urgency" id="urgency"></p>
     </div>
     <div class="grid" id="cards"></div>
@@ -500,7 +499,7 @@ const T = {
   hero_title:{en:"Where do you wanna stay?",id:"Mau menginap di mana?"},
   hero_sub:{en:"Hover a pin to preview each villa.",id:"Arahkan kursor ke pin untuk pratinjau villa."},
   villas_kicker:{en:"Our collection",id:"Koleksi kami"},
-  villas_title:{en:"Available Villas",id:"Villa Tersedia"},
+  villas_title:{en:"Our Villas",id:"Villa Kami"},
   about_kicker:{en:"About us",id:"Tentang kami"},
   about_title:{en:"Villas managed with care",id:"Villa yang dikelola sepenuh hati"},
   about_p1:{en:"Hunilivin is a boutique villa management team in Bali. We look after a small, curated collection of private villas — so every guest gets a home that's cared for, and every owner gets peace of mind.",id:"Hunilivin adalah tim manajemen villa butik di Bali. Kami merawat koleksi kecil villa pribadi pilihan — agar setiap tamu mendapat rumah yang terawat, dan setiap pemilik merasa tenang."},
@@ -637,18 +636,23 @@ function initMap(){
     baseZoom=null; originPt=null; curScale=1;
     map.setZoomAround(ll, bz + Math.log2(scale), {animate:false});
   }
-  // Safari: trackpad pinch = gesture events
-  mc.addEventListener("gesturestart",e=>{ e.preventDefault(); beginVisual(map.mouseEventToContainerPoint(e)); });
-  mc.addEventListener("gesturechange",e=>{ e.preventDefault(); if(baseZoom==null) return; applyVisual(e.scale); });
-  mc.addEventListener("gestureend",e=>{ e.preventDefault(); commitVisual(); });
-  // Chrome/Firefox: trackpad pinch = ctrl+wheel (scale live, commit shortly after it stops)
-  mc.addEventListener("wheel",e=>{
-    if(!e.ctrlKey) return;
-    e.preventDefault();
-    if(baseZoom==null) beginVisual(map.mouseEventToContainerPoint(e));
-    applyVisual(curScale*Math.exp(-e.deltaY*0.01));
-    clearTimeout(commitTimer); commitTimer=setTimeout(commitVisual,200);
-  },{passive:false});
+  // On touch devices (phone/iPad) let Leaflet's native pinch-zoom handle it.
+  // Only use the custom trackpad-pinch handlers on non-touch (desktop) browsers.
+  const isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+  if(!isTouch){
+    // Safari: trackpad pinch = gesture events
+    mc.addEventListener("gesturestart",e=>{ e.preventDefault(); beginVisual(map.mouseEventToContainerPoint(e)); });
+    mc.addEventListener("gesturechange",e=>{ e.preventDefault(); if(baseZoom==null) return; applyVisual(e.scale); });
+    mc.addEventListener("gestureend",e=>{ e.preventDefault(); commitVisual(); });
+    // Chrome/Firefox: trackpad pinch = ctrl+wheel (scale live, commit shortly after it stops)
+    mc.addEventListener("wheel",e=>{
+      if(!e.ctrlKey) return;
+      e.preventDefault();
+      if(baseZoom==null) beginVisual(map.mouseEventToContainerPoint(e));
+      applyVisual(curScale*Math.exp(-e.deltaY*0.01));
+      clearTimeout(commitTimer); commitTimer=setTimeout(commitVisual,200);
+    },{passive:false});
+  }
   const pinSVG=`<svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg">
       <path d="M15 0C7 0 .5 6.4.5 14.3.5 25 15 40 15 40s14.5-15 14.5-25.7C29.5 6.4 23 0 15 0z" fill="#d13b30"/>
       <circle cx="15" cy="14.3" r="5.2" fill="#fff"/></svg>`;
