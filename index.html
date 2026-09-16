@@ -359,8 +359,8 @@
       <p data-t="about_p1">Hunilivin is a boutique villa management team in Bali. We look after a small, curated collection of private villas — so every guest gets a home that's cared for, and every owner gets peace of mind.</p>
       <p data-t="about_p2">From your first message to your last night, we handle everything personally.</p>
       <div class="stats">
-        <div><div class="n">9</div><div class="l" data-t="stat_villas">Villas</div></div>
-        <div><div class="n">6</div><div class="l" data-t="stat_areas">Areas</div></div>
+        <div><div class="n" id="stat-villas">9</div><div class="l" data-t="stat_villas">Villas</div></div>
+        <div><div class="n" id="stat-areas">6</div><div class="l" data-t="stat_areas">Areas</div></div>
         <div><div class="n">4.9★</div><div class="l" data-t="stat_rating">Guest rating</div></div>
       </div>
       <div class="founder">
@@ -529,7 +529,7 @@ const T = {
   stat_villas:{en:"Villas",id:"Villa"}, stat_areas:{en:"Areas",id:"Area"}, stat_rating:{en:"Guest rating",id:"Rating tamu"},
   rev_kicker:{en:"Kind words",id:"Kata mereka"},
   rev_title:{en:"What Guests Say",id:"Kata Para Tamu"},
-  rev_sub:{en:"★ 4.9 average · 120+ reviews on Google & Airbnb",id:"★ Rata-rata 4.9 · 120+ ulasan di Google & Airbnb"},
+  rev_sub:{en:"★ 4.9 average · 120+ positive reviews",id:"★ Rata-rata 4.9 · 120+ ulasan positif"},
   con_kicker:{en:"Say hello",id:"Sapa kami"},
   con_title:{en:"Contact Us",id:"Hubungi Kami"},
   con_wa:{en:"Chat on WhatsApp",id:"Chat via WhatsApp"},
@@ -635,7 +635,7 @@ function renderReviews(){
     const el=document.createElement("div"); el.className="tcard";
     el.innerHTML=`<div class="stars">★★★★★</div>
       <p>"${lang==="en"?r.t_en:r.t_id}"</p>
-      <div class="who"><img src="${r.img}" alt=""/><div><b>${r.who.split(" · ")[0]}</b><span>${r.who.split(" · ")[1]}</span></div><span class="tsrc">${REVIEW_SRC[i%REVIEW_SRC.length]}</span></div>`;
+      <div class="who"><img src="${r.img}" alt=""/><div><b>${r.who.split(" · ")[0]}</b></div></div>`;
     g.appendChild(el);
   });
 }
@@ -772,7 +772,12 @@ function sendInquiry(e){
 }
 window.sendInquiry=sendInquiry;
 
-function renderAll(){ renderText(); renderCards(); renderReviews(); renderFAQ(); setUrgency(); fillVillaSelect(); markers.forEach(bindPopup); }
+function setStats(){
+  const sv=document.getElementById("stat-villas"), sa=document.getElementById("stat-areas");
+  if(sv) sv.textContent=villas.length;
+  if(sa) sa.textContent=new Set(villas.map(v=>v.area)).size;
+}
+function renderAll(){ renderText(); renderCards(); renderReviews(); renderFAQ(); setUrgency(); fillVillaSelect(); setStats(); markers.forEach(bindPopup); }
 
 /* ---------- scroll reveal ---------- */
 const io=new IntersectionObserver(es=>{
