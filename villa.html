@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Villa · Hunilivin</title>
+<meta name="description" content="Villa details — photos, amenities and location. Book your Bali stay with Hunilivin via WhatsApp." />
+<link rel="icon" href="logo-trim.png" />
+<link rel="apple-touch-icon" href="logo-trim.png" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -264,7 +267,7 @@ function render(){
   const p=fmtPrice(v.price);
   document.getElementById("price").innerHTML=`${p.m} <small>${p.s}</small>`;
   const wa=document.getElementById("wabtn");
-  const PHONE="6281234567890"; // TODO: ganti nomor WhatsApp bisnis asli
+  const PHONE="628993000157";
   if(v.status==="booked"){wa.className="wa disabled";wa.textContent=lang==="en"?"Currently booked":"Sedang terisi";wa.onclick=null;}
   else{
     if(v.status==="soon"){wa.className="wa";wa.textContent=lang==="en"?"Notify me when available":"Beri tahu saat tersedia";}
@@ -285,8 +288,9 @@ window.gi=gi; window.showImg=showImg;
 
 // mini map
 const mmap=L.map("minimap",{scrollWheelZoom:false,zoomControl:true}).setView([v.lat,v.lng],14);
-L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",{
-  attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:"abcd",maxZoom:20}).addTo(mmap);
+mmap.attributionControl.setPrefix(false);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{
+  attribution:'&copy; OpenStreetMap',maxZoom:19}).addTo(mmap);
 L.marker([v.lat,v.lng],{icon:L.divIcon({className:"pin",iconSize:[30,40],iconAnchor:[15,40],
   html:`<svg width="30" height="40" viewBox="0 0 30 40"><path d="M15 0C7 0 .5 6.4.5 14.3.5 25 15 40 15 40s14.5-15 14.5-25.7C29.5 6.4 23 0 15 0z" fill="#d13b30"/><circle cx="15" cy="14.3" r="5.2" fill="#fff"/></svg>`})}).addTo(mmap);
 

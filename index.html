@@ -3,7 +3,19 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Hunilivin — mockup</title>
+<title>Hunilivin — Villa Management &amp; Rentals in Bali</title>
+<meta name="description" content="Hunilivin — boutique villa management in Bali. Explore hand-picked private villas on an interactive map and book your stay directly via WhatsApp." />
+<link rel="icon" href="logo-trim.png" />
+<link rel="apple-touch-icon" href="logo-trim.png" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Hunilivin — Villa Management in Bali" />
+<meta property="og:description" content="Hand-picked private villas in Bali. Find your stay on the map and book via WhatsApp." />
+<meta property="og:image" content="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=70" />
+<meta property="og:url" content="https://tomy-pp.github.io/hunilivin/" />
+<meta name="twitter:card" content="summary_large_image" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"LodgingBusiness","name":"Hunilivin","description":"Boutique villa management in Bali offering hand-picked private villas for rent.","areaServed":"Bali, Indonesia","url":"https://tomy-pp.github.io/hunilivin/","telephone":"+628993000157","sameAs":["https://instagram.com/hunilivin"]}
+</script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,7 +79,8 @@
     text-shadow:0 2px 18px rgba(255,255,255,.95),0 1px 3px rgba(255,255,255,.95)}
   .map-title.behind,.map-sub.behind{opacity:0}
   #map{height:78vh;min-height:520px;width:100%;background:#eaf1f4}
-  .leaflet-control-zoom,.leaflet-control-attribution{display:none!important}
+  .leaflet-control-zoom{display:none!important}
+  .leaflet-control-attribution{font-size:10px;background:rgba(255,255,255,.65);opacity:.75}
   .pin svg{filter:drop-shadow(0 3px 4px rgba(0,0,0,.35));transition:transform .15s ease}
   .pindrop{animation:pinDrop .6s cubic-bezier(.2,.8,.25,1) both}
   .pin:hover svg{transform:scale(1.15) translateY(-2px)}
@@ -435,8 +448,6 @@
 <a class="fab-wa" href="#" onclick="return waGeneral()" aria-label="Chat on WhatsApp">
   <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.2c-7.06 0-12.79 5.73-12.79 12.79 0 2.25.59 4.45 1.71 6.39L3.2 28.8l6.6-1.73a12.73 12.73 0 0 0 6.2 1.58c7.06 0 12.79-5.73 12.79-12.79S23.06 3.2 16 3.2zm0 23.31a10.5 10.5 0 0 1-5.36-1.47l-.38-.23-3.92 1.03 1.05-3.82-.25-.39a10.48 10.48 0 0 1-1.61-5.58c0-5.86 4.77-10.63 10.64-10.63a10.56 10.56 0 0 1 10.63 10.63c0 5.87-4.77 10.64-10.63 10.64zm5.83-7.96c-.32-.16-1.89-.93-2.18-1.04-.29-.11-.5-.16-.72.16-.21.32-.82 1.04-1.01 1.25-.19.21-.37.24-.69.08-.32-.16-1.35-.5-2.57-1.59-.95-.85-1.59-1.9-1.78-2.22-.19-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.72-1.74-.99-2.38-.26-.62-.53-.54-.72-.55h-.61c-.21 0-.56.08-.85.4-.29.32-1.11 1.09-1.11 2.66 0 1.57 1.14 3.08 1.3 3.29.16.21 2.25 3.43 5.44 4.81.76.33 1.35.53 1.81.68.76.24 1.45.21 2 .13.61-.09 1.89-.77 2.16-1.52.27-.75.27-1.39.19-1.52-.08-.13-.29-.21-.61-.37z"/></svg>
 </a>
-<div class="mockup-flag">Mockup · Hunilivin</div>
-
 <script>
 /* ---------- data ---------- */
 const RATE = 16000; // 1 USD
@@ -604,9 +615,10 @@ function renderReviews(){
 /* ---------- map ---------- */
 let map, markers=[];
 function initMap(){
-  map=L.map("map",{scrollWheelZoom:false,zoomControl:false,attributionControl:false,zoomSnap:0,zoomDelta:0.4}).setView([-8.72,115.17],11);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",{
-    attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:"abcd", maxZoom:20, keepBuffer:4}).addTo(map);
+  map=L.map("map",{scrollWheelZoom:false,zoomControl:false,zoomSnap:0,zoomDelta:0.4}).setView([-8.72,115.17],11);
+  map.attributionControl.setPrefix(false);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{
+    attribution:'&copy; OpenStreetMap', maxZoom:19, keepBuffer:4}).addTo(map);
   // smooth pinch-to-zoom: CSS-scale the live tiles during the gesture (never blank),
   // then commit the real zoom once the pinch ends.
   const mc=map.getContainer();
@@ -669,7 +681,7 @@ function bindPopup(m){
 function goVilla(i){ window.location.href="villa.html?id="+i; }
 
 /* ---------- WhatsApp CTAs ---------- */
-const WA_PHONE="6281234567890"; // TODO: ganti nomor WhatsApp bisnis asli
+const WA_PHONE="628993000157";
 function openWA(msg){
   const url=`https://wa.me/${WA_PHONE}?text=${encodeURIComponent(msg)}`;
   const w=window.open(url,"_blank"); if(!w) window.location.href=url;
