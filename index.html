@@ -496,7 +496,7 @@ const reviews = [
 // [min to nearest beach, min from airport] per villa (index matches villas)
 const NEAR=[[5,45],[7,35],[40,60],[3,30],[4,50],[8,40],[5,20],[6,40],[4,30]];
 // rental periods bookable per villa (first one = the price unit shown). Will come from the Sheet's "rental_periods" column.
-const TERMS=[["Daily","Weekly","Monthly"],["Daily","Weekly","Monthly","Yearly"],["Monthly","Yearly"],["Daily","Weekly","Monthly"],["Daily","Weekly"],["Daily","Weekly","Monthly","Yearly"],["Monthly","Yearly"],["Yearly"],["Monthly","Yearly"]];
+const TERMS=[["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"]];
 const PERIOD={Daily:{en:"Daily",id:"Harian",per:{en:"/night",id:"/malam"}},Weekly:{en:"Weekly",id:"Mingguan",per:{en:"/week",id:"/minggu"}},Monthly:{en:"Monthly",id:"Bulanan",per:{en:"/month",id:"/bulan"}},Yearly:{en:"Yearly",id:"Tahunan",per:{en:"/year",id:"/tahun"}}};
 const igImgs=villas.slice(0,6).map(v=>v.img);
 const faqs=[
