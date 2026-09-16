@@ -79,7 +79,10 @@
     text-shadow:0 2px 18px rgba(255,255,255,.95),0 1px 3px rgba(255,255,255,.95)}
   .map-title.behind,.map-sub.behind{opacity:0}
   #map{height:78vh;min-height:520px;width:100%;background:#eaf1f4}
-  .leaflet-control-zoom{display:none!important}
+  .leaflet-tile{filter:saturate(.58) brightness(1.05) contrast(.93)}
+  .leaflet-control-zoom{margin:132px 0 0 16px!important;border:none!important;border-radius:10px!important;
+    overflow:hidden;box-shadow:0 4px 14px rgba(31,42,36,.16)!important}
+  .leaflet-control-zoom a{color:#161616!important;border:none!important;font-weight:500}
   .leaflet-control-attribution{font-size:10px;background:rgba(255,255,255,.65);opacity:.75}
   .pin svg{filter:drop-shadow(0 3px 4px rgba(0,0,0,.35));transition:transform .15s ease}
   .pindrop{animation:pinDrop .6s cubic-bezier(.2,.8,.25,1) both}
@@ -615,7 +618,7 @@ function renderReviews(){
 /* ---------- map ---------- */
 let map, markers=[];
 function initMap(){
-  map=L.map("map",{scrollWheelZoom:false,zoomControl:false,zoomSnap:0,zoomDelta:0.4}).setView([-8.72,115.17],11);
+  map=L.map("map",{scrollWheelZoom:false,zoomControl:true,zoomSnap:0,zoomDelta:0.4}).setView([-8.72,115.17],11);
   map.attributionControl.setPrefix(false);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{
     attribution:'&copy; OpenStreetMap', maxZoom:19, keepBuffer:4}).addTo(map);
