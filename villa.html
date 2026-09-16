@@ -127,6 +127,7 @@
       <div class="loc" id="vnear" style="margin-top:2px"></div>
       <div class="facts" id="facts"></div>
       <div class="price" id="price"></div>
+      <div class="loc" id="vterms" style="margin-top:2px"></div>
       <button class="wa" id="wabtn"></button>
     </div>
   </div>
@@ -153,7 +154,7 @@
 </div></footer>
 
 <script>
-const RATE=16000;
+let RATE=16000;
 const AMEN={
   pool:{en:"Private pool",id:"Kolam pribadi",ic:"🏊"},
   ocean:{en:"Ocean view",id:"Pemandangan laut",ic:"🌊"},
@@ -216,6 +217,8 @@ const villas=[
 ];
 // [min to nearest beach, min from airport] per villa
 const NEAR=[[5,45],[7,35],[40,60],[3,30],[4,50],[8,40],[5,20],[6,40],[4,30]];
+const TERMS=[["Daily","Weekly","Monthly"],["Daily","Weekly","Monthly","Yearly"],["Monthly","Yearly"],["Daily","Weekly","Monthly"],["Daily","Weekly"],["Daily","Weekly","Monthly","Yearly"],["Monthly","Yearly"],["Yearly"],["Monthly","Yearly"]];
+const PERIOD={Daily:{en:"Daily",id:"Harian",per:{en:"/night",id:"/malam"}},Weekly:{en:"Weekly",id:"Mingguan",per:{en:"/week",id:"/minggu"}},Monthly:{en:"Monthly",id:"Bulanan",per:{en:"/month",id:"/bulan"}},Yearly:{en:"Yearly",id:"Tahunan",per:{en:"/year",id:"/tahun"}}};
 // shared extra photos so each villa has a browsable gallery (mockup only)
 const EXTRA=[
  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=72",
@@ -236,10 +239,11 @@ const v=villas[id];
 const gallery=[v.img,...EXTRA];
 let lang="en", cur="IDR", gi=0;
 
-function fmtPrice(idr){
+function fmtPrice(idr, sub){
+  sub = sub || (lang==="en"?"/night":"/malam");
   if(!idr) return {m:(lang==="en"?"Coming soon":"Segera hadir"),s:""};
-  if(cur==="IDR") return {m:"Rp"+idr.toLocaleString("id-ID"),s:lang==="en"?"/night":"/malam"};
-  return {m:"$"+Math.round(idr/RATE).toLocaleString("en-US"),s:lang==="en"?"/night":"/malam"};
+  if(cur==="IDR") return {m:"Rp"+idr.toLocaleString("id-ID"),s:sub};
+  return {m:"$"+Math.round(idr/RATE).toLocaleString("en-US"),s:sub};
 }
 function showImg(){
   document.getElementById("mainimg").src=gallery[gi];
@@ -264,8 +268,10 @@ function render(){
     `<div><b>${v.br}</b>${lang==="en"?"Bedrooms":"Kamar tidur"}</div>
      <div><b>${v.ba}</b>${lang==="en"?"Bathrooms":"Kamar mandi"}</div>
      <div><b>${Math.max(v.br*2,2)}</b>${lang==="en"?"Guests":"Tamu"}</div>`;
-  const p=fmtPrice(v.price);
+  const unit=TERMS[id][0];
+  const p=fmtPrice(v.price, PERIOD[unit].per[lang]);
   document.getElementById("price").innerHTML=`${p.m} <small>${p.s}</small>`;
+  document.getElementById("vterms").textContent=(lang==="en"?"Rental: ":"Sewa: ")+TERMS[id].map(x=>PERIOD[x][lang]).join(" · ");
   const wa=document.getElementById("wabtn");
   const PHONE="628993000157";
   if(v.status==="booked"){wa.className="wa disabled";wa.textContent=lang==="en"?"Currently booked":"Sedang terisi";wa.onclick=null;}
@@ -301,6 +307,12 @@ document.getElementById("cur").addEventListener("click",e=>{if(!e.target.dataset
   document.querySelectorAll("#cur button").forEach(b=>b.classList.toggle("on",b===e.target));render();});
 
 showImg(); render();
+
+/* live exchange rate (IDR per 1 USD) — free, no key */
+fetch("https://api.frankfurter.app/latest?from=USD&to=IDR")
+  .then(r=>r.json())
+  .then(d=>{ if(d&&d.rates&&d.rates.IDR){ RATE=d.rates.IDR; if(cur==="USD") render(); } })
+  .catch(()=>{});
 </script>
 </body>
 </html>
