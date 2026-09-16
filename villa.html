@@ -127,7 +127,8 @@
       <div class="loc" id="vnear" style="margin-top:2px"></div>
       <div class="facts" id="facts"></div>
       <div class="price" id="price"></div>
-      <div class="loc" id="vterms" style="margin-top:2px"></div>
+      <div class="loc" id="vterms" style="margin-top:2px;font-weight:700;color:var(--ink)"></div>
+      <div class="loc" id="vterms-note" style="margin-top:1px;font-weight:700"></div>
       <button class="wa" id="wabtn"></button>
     </div>
   </div>
@@ -272,6 +273,9 @@ function render(){
   const p=fmtPrice(v.price, PERIOD[unit].per[lang]);
   document.getElementById("price").innerHTML=`${p.m} <small>${p.s}</small>`;
   document.getElementById("vterms").textContent=(lang==="en"?"Rental: ":"Sewa: ")+TERMS[id].map(x=>PERIOD[x][lang]).join(" · ");
+  document.getElementById("vterms-note").textContent=TERMS[id].length>1
+    ? (lang==="en"?"Other durations — message us on WhatsApp for rates.":"Harga durasi lain — hubungi admin via WhatsApp.")
+    : "";
   const wa=document.getElementById("wabtn");
   const PHONE="628993000157";
   if(v.status==="booked"){wa.className="wa disabled";wa.textContent=lang==="en"?"Currently booked":"Sedang terisi";wa.onclick=null;}
