@@ -190,7 +190,8 @@
   .step p{font-size:14px;color:var(--muted)}
   /* founder */
   .founder{display:flex;align-items:center;gap:14px;margin-top:26px;border-top:1px solid rgba(255,255,255,.15);padding-top:22px}
-  .founder img{width:62px;height:62px;border-radius:50%;object-fit:cover;object-position:50% 18%}
+  .founder .avatar{width:62px;height:62px;border-radius:50%;flex:none;
+    background:#ddd url(founder.png) 50% 12% / 175% no-repeat}
   .founder b{color:#fff;font-size:15px;display:block}
   .founder span{color:#b5b5b5;font-size:13px}
   /* experience / video */
@@ -345,8 +346,8 @@
         <div><div class="n">4.9★</div><div class="l" data-t="stat_rating">Guest rating</div></div>
       </div>
       <div class="founder">
-        <img src="founder.png" alt="Tomy Hartono, Founder of Hunilivin" />
-        <div><b>Tomy Hartono</b><span data-t="founder_role">Founder · Hunilivin</span></div>
+        <span class="avatar" role="img" aria-label="Tomy Hartono, Co-Founder of Hunilivin"></span>
+        <div><b>Tomy Hartono</b><span data-t="founder_role">Co-Founder · Hunilivin</span></div>
       </div>
     </div>
     <div class="imgs">
@@ -526,7 +527,7 @@ const T = {
   step1_p:{en:"Message us on WhatsApp — tell us your dates and the villa you like.",id:"Chat kami di WhatsApp — sebutin tanggal & villa yang kamu suka."},
   step2_p:{en:"We check real-time availability and send a clear quote — no hidden fees.",id:"Kami cek ketersediaan real-time & kirim penawaran jelas — tanpa biaya tersembunyi."},
   step3_p:{en:"Secure it with a deposit. We handle everything until check-out.",id:"Amankan dengan deposit. Sisanya kami urus sampai check-out."},
-  founder_role:{en:"Founder · Hunilivin",id:"Pendiri · Hunilivin"},
+  founder_role:{en:"Co-Founder · Hunilivin",id:"Co-Founder · Hunilivin"},
   exp_kicker:{en:"Life at our villas",id:"Kehidupan di villa kami"},
   exp_title:{en:"Take a tour",id:"Lihat langsung"},
   ig_kicker:{en:"@hunilivin",id:"@hunilivin"},
