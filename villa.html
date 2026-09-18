@@ -299,8 +299,8 @@ window.gi=gi; window.showImg=showImg;
 // mini map
 const mmap=L.map("minimap",{scrollWheelZoom:false,zoomControl:true}).setView([v.lat,v.lng],14);
 mmap.attributionControl.setPrefix(false);
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{
-  attribution:'&copy; OpenStreetMap',maxZoom:19}).addTo(mmap);
+L.tileLayer("https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=fS5rVa6Z9hrGqm1GCuHM",{
+  attribution:'&copy; MapTiler &copy; OpenStreetMap',maxZoom:20,crossOrigin:true}).addTo(mmap);
 L.marker([v.lat,v.lng],{icon:L.divIcon({className:"pin",iconSize:[30,40],iconAnchor:[15,40],
   html:`<svg width="30" height="40" viewBox="0 0 30 40"><path d="M15 0C7 0 .5 6.4.5 14.3.5 25 15 40 15 40s14.5-15 14.5-25.7C29.5 6.4 23 0 15 0z" fill="#d13b30"/><circle cx="15" cy="14.3" r="5.2" fill="#fff"/></svg>`})}).addTo(mmap);
 
