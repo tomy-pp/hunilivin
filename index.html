@@ -645,7 +645,7 @@ let map, markers=[];
 function initMap(){
   map=L.map("map",{scrollWheelZoom:false,zoomControl:true,zoomSnap:0,zoomDelta:0.4}).setView([-8.72,115.17],11);
   map.attributionControl.setPrefix(false);
-  L.tileLayer("https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=fS5rVa6Z9hrGqm1GCuHM",{
+  L.tileLayer("https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=fS5rVa6Z9hrGqm1GCuHM",{
     attribution:'&copy; MapTiler &copy; OpenStreetMap', maxZoom:20, keepBuffer:4, crossOrigin:true}).addTo(map);
   // smooth pinch-to-zoom: CSS-scale the live tiles during the gesture (never blank),
   // then commit the real zoom once the pinch ends.
