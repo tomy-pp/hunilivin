@@ -9,3 +9,5 @@
 !villas-data.js
 !photos/
 !photos/**
+!build/
+!build/build.py
