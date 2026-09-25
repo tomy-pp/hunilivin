@@ -679,7 +679,10 @@ function initMap(){
       iconSize:[30,40],iconAnchor:[15,40],popupAnchor:[0,-34]});
     const m=L.marker([v.lat,v.lng],{icon}).addTo(map);
     m._villa=v; m._i=i; m._real=L.latLng(v.lat,v.lng); markers.push(m);
-    m.on("mouseover",()=>m.openPopup());
+    // Desktop: open on hover. Touch (phone/iPad): a single tap opens the popup
+    // (Leaflet's default marker click). Binding mouseover on touch made the first
+    // tap open-then-close, forcing a second tap — so skip it there.
+    if(!isTouch) m.on("mouseover",()=>m.openPopup());
     bindPopup(m);
   });
   // Spread pins that overlap at the current zoom so every villa is visible;
