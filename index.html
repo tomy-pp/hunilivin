@@ -252,9 +252,16 @@
   .fab-wa svg{width:32px;height:32px;fill:#fff}
 
   @media(max-width:820px){
+    html,body{overflow-x:hidden}
     .grid,.tgrid{grid-template-columns:1fr}
     .about .cols{grid-template-columns:1fr}
     .nav .links{display:none}
+    /* header WhatsApp is redundant on phones (floating WA button covers it) and
+       overflowed off-screen in portrait — hide it and tighten the header to fit */
+    .nav .right .wa{display:none}
+    .nav{height:80px}
+    .logo img{height:64px}
+    .nav .right{gap:8px}
     .hero h1{font-size:32px}
     .map-title{font-size:32px}
     .steps-row{grid-template-columns:1fr}
