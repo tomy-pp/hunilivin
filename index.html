@@ -701,7 +701,7 @@ function initMap(){
     markers.forEach((m,idx)=>m.setLatLng(map.layerPointToLatLng(L.point(P[idx].x,P[idx].y))));
   }
   map.on("zoomend", declutter);
-  try{ if(markers.length) map.fitBounds(L.latLngBounds(villas.map(v=>[v.lat,v.lng])).pad(0.6),{maxZoom:13}); }catch(e){}
+  try{ if(markers.length) map.fitBounds(L.latLngBounds(villas.map(v=>[v.lat,v.lng])).pad(0.6),{maxZoom:11}); }catch(e){}
   declutter();
   // hero title stays visible; if a villa popup lands on it, move the title out of the way briefly
   const titleEl=document.querySelector(".map-title"), subEl=document.querySelector(".map-sub");

@@ -36,6 +36,8 @@
   .back:hover{color:var(--green)}
 
   .top{display:grid;grid-template-columns:1.35fr 1fr;gap:34px;margin-top:8px;align-items:start}
+  .top>div{min-width:0}
+  .stage{max-height:78vh}
 
   /* gallery */
   .gallery{border-radius:16px;overflow:hidden;background:#000;position:relative}
@@ -96,7 +98,7 @@
 
 <header>
   <div class="wrap nav">
-    <a href="mockup.html" class="logo"><img src="logo-trim.png" alt="Hunilivin" /></a>
+    <a href="index.html" class="logo"><img src="logo-trim.png" alt="Hunilivin" /></a>
     <div class="right">
       <div class="toggle" id="lang"><button data-lang="en" class="on">EN</button><button data-lang="id">ID</button></div>
       <div class="toggle" id="cur"><button data-cur="IDR" class="on">IDR</button><button data-cur="USD">USD</button></div>
@@ -105,7 +107,7 @@
 </header>
 
 <div class="wrap">
-  <a href="mockup.html" class="back" data-t="back">← Back to all villas</a>
+  <a href="index.html" class="back" data-t="back">← Back to all villas</a>
 
   <div class="top">
     <div>
