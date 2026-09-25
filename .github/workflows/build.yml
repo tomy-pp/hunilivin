@@ -1,0 +1,36 @@
+name: Sync villas from Google Sheet
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # every ~15 minutes
+  workflow_dispatch:          # manual "Run workflow" button
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-villas
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Rebuild villa data from the Google Sheet
+        run: python3 build/build.py
+      - name: Commit & deploy if changed
+        run: |
+          if ! git diff --quiet villas-data.js; then
+            git config user.name "hunilivin-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add villas-data.js
+            git commit -m "Auto-sync villas from Google Sheet"
+            git push
+            echo "Deployed updated villa data."
+          else
+            echo "No changes in the sheet."
+          fi

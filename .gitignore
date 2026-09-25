@@ -11,3 +11,6 @@
 !photos/**
 !build/
 !build/build.py
+!.github/
+!.github/workflows/
+!.github/workflows/build.yml
