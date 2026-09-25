@@ -10,6 +10,7 @@ import urllib.request, csv, io, json, os, re, sys, hashlib
 
 SHEET_ID = "1YXjx-jDYcppdzCFw42AZHSsIUTfbOWXIDnVe9tt762U"
 CSV_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv"
+SITE_URL = "https://hunilivin.com"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "villas-data.js")
 LOGO_SRC = os.path.join(ROOT, "logo-trim.png")
@@ -120,6 +121,28 @@ def process_url(vid, url):
         print(f"    !! could not process {url[:60]}: {e}", file=sys.stderr)
         return None
 
+# ---------- SEO: sitemap.xml + robots.txt ----------
+def write_seo(villas):
+    import datetime
+    today = datetime.date.today().isoformat()
+    def esc(u):
+        return u.replace("&", "&amp;")
+    urls = [(SITE_URL + "/", "1.0")]
+    for v in villas:
+        urls.append((f"{SITE_URL}/villa.html?id={v['id']}", "0.8"))
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for loc, pr in urls:
+        lines.append(f"  <url><loc>{esc(loc)}</loc><lastmod>{today}</lastmod>"
+                     f"<changefreq>weekly</changefreq><priority>{pr}</priority></url>")
+    lines.append("</urlset>\n")
+    open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(lines))
+    robots = ("User-agent: *\n"
+              "Allow: /\n\n"
+              f"Sitemap: {SITE_URL}/sitemap.xml\n")
+    open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8").write(robots)
+    print(f"OK: wrote sitemap.xml ({len(urls)} urls) + robots.txt")
+
 def resolve_photos(vid, cell):
     """Sheet `photos` cell is the source of truth when filled; empty -> use the processed batch."""
     items = [x for x in split_pipe(cell) if not x.upper().startswith("PASTE_LINK")]
@@ -161,6 +184,7 @@ def main():
     payload = "window.HUNI=" + json.dumps({"villas": villas}, ensure_ascii=False) + ";\n"
     open(OUT, "w", encoding="utf-8").write(payload)
     print(f"OK: wrote {len(villas)} villas to {OUT} ({len(payload)} bytes)")
+    write_seo(villas)
     for v in villas:
         print(f"  - {v['id']} | {v['name']} | {v['status']} | Rp{v['price']:,} | {len(v['photos'])} photo(s)")
 
