@@ -154,79 +154,11 @@
   <div>© 2026 Hunilivin · Villa management, Bali</div>
 </div></footer>
 
+<script src="villas-data.js"></script>
 <script>
 let RATE=16000;
-const AMEN={
-  pool:{en:"Private pool",id:"Kolam pribadi",ic:"🏊"},
-  ocean:{en:"Ocean view",id:"Pemandangan laut",ic:"🌊"},
-  wifi:{en:"Fast Wi-Fi",id:"Wi-Fi cepat",ic:"📶"},
-  ac:{en:"Air conditioning",id:"AC",ic:"❄️"},
-  kitchen:{en:"Full kitchen",id:"Dapur lengkap",ic:"🍳"},
-  parking:{en:"Free parking",id:"Parkir gratis",ic:"🅿️"},
-  breakfast:{en:"Breakfast",id:"Sarapan",ic:"🥐"},
-  cleaning:{en:"Daily cleaning",id:"Bersih-bersih harian",ic:"🧹"},
-  garden:{en:"Tropical garden",id:"Taman tropis",ic:"🌴"},
-  gym:{en:"Gym",id:"Gym",ic:"🏋️"},
-  workspace:{en:"Workspace",id:"Ruang kerja",ic:"💻"},
-};
-const villas=[
- {name:"Uluwatu Cliff Villa",area:"Uluwatu",br:3,ba:3,price:4500000,status:"available",lat:-8.829,lng:115.087,
-  img:"https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1000&q=72",
-  amen:["pool","ocean","wifi","ac","kitchen","parking","cleaning"],
-  d_en:"Perched on the Uluwatu cliffs with sweeping Indian Ocean views, this 3-bedroom villa pairs an infinity pool with sunset-facing living spaces — steps from Bali's best surf breaks.",
-  d_id:"Berdiri di tebing Uluwatu dengan panorama Samudra Hindia, villa 3 kamar ini memadukan infinity pool dengan ruang santai menghadap matahari terbenam — dekat dari ombak surfing terbaik Bali."},
- {name:"Canggu Loft Villa",area:"Canggu",br:2,ba:2,price:3200000,status:"booked",lat:-8.647,lng:115.138,
-  img:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=72",
-  amen:["pool","wifi","ac","kitchen","workspace","parking"],
-  d_en:"A modern loft-style villa in the heart of Canggu — walking distance to cafés, beach clubs and co-working spaces. Ideal for digital nomads and couples.",
-  d_id:"Villa bergaya loft modern di jantung Canggu — jarak jalan kaki ke kafe, beach club, dan ruang kerja bersama. Ideal buat digital nomad dan pasangan."},
- {name:"Ubud Jungle Villa",area:"Ubud",br:4,ba:4,price:5800000,status:"available",lat:-8.507,lng:115.263,
-  img:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=72",
-  amen:["pool","garden","wifi","ac","kitchen","breakfast","cleaning"],
-  d_en:"Wake up to birdsong and river-valley views in this 4-bedroom retreat surrounded by Ubud's rice terraces and jungle. Total privacy, ten minutes from Ubud center.",
-  d_id:"Bangun dengan kicau burung dan pemandangan lembah sungai di retret 4 kamar yang dikelilingi sawah dan hutan Ubud. Privasi penuh, sepuluh menit dari pusat Ubud."},
- {name:"Seminyak Beach House",area:"Seminyak",br:3,ba:3,price:4000000,status:"available",lat:-8.690,lng:115.168,
-  img:"https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=72",
-  amen:["pool","wifi","ac","kitchen","parking","cleaning"],
-  d_en:"A stylish beach house just minutes from Seminyak's boutiques, restaurants and sunset bars. Open-plan living with a private pool and tropical garden.",
-  d_id:"Beach house bergaya hanya beberapa menit dari butik, restoran, dan bar sunset Seminyak. Ruang terbuka dengan kolam pribadi dan taman tropis."},
- {name:"Bingin Surf Villa",area:"Bingin",br:2,ba:2,price:2800000,status:"booked",lat:-8.808,lng:115.113,
-  img:"https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=1000&q=72",
-  amen:["pool","ocean","wifi","ac","parking"],
-  d_en:"A laid-back 2-bedroom villa above Bingin beach, built for surfers and slow mornings. Ocean breeze, plunge pool, and the reef a short walk down the cliff.",
-  d_id:"Villa 2 kamar santai di atas Pantai Bingin, dibuat buat peselancar dan pagi yang tenang. Angin laut, plunge pool, dan reef sejauh jalan kaki menuruni tebing."},
- {name:"Ungasan Ocean Villa",area:"Ungasan",br:5,ba:5,price:8500000,status:"available",lat:-8.816,lng:115.147,
-  img:"https://images.unsplash.com/photo-1601918774946-25832a4be0d6?auto=format&fit=crop&w=1000&q=72",
-  amen:["pool","ocean","wifi","ac","kitchen","breakfast","cleaning","gym"],
-  d_en:"Our flagship 5-bedroom estate in Ungasan — a private clifftop compound with a 20-meter pool, full staff, and an uninterrupted ocean horizon. Built for groups and celebrations.",
-  d_id:"Estat unggulan 5 kamar kami di Ungasan — kompleks pribadi di atas tebing dengan kolam 20 meter, staf lengkap, dan cakrawala laut tanpa halangan. Cocok buat rombongan dan perayaan."},
- {name:"Nusa Dua Villa",area:"Nusa Dua",br:3,ba:3,price:0,status:"soon",lat:-8.800,lng:115.228,
-  img:"https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=1000&q=72",
-  amen:["pool","wifi","ac","kitchen","parking","garden"],
-  d_en:"Opening soon — a serene 3-bedroom villa in gated Nusa Dua, moments from calm white-sand beaches. Register your interest to be first to book.",
-  d_id:"Segera hadir — villa 3 kamar tenang di kawasan Nusa Dua, dekat pantai pasir putih yang tenang. Daftarkan minatmu untuk jadi yang pertama booking."},
- {name:"Pererenan Villa",area:"Pererenan",br:2,ba:2,price:0,status:"soon",lat:-8.645,lng:115.120,
-  img:"https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1000&q=72",
-  amen:["pool","wifi","ac","kitchen","workspace"],
-  d_en:"Coming soon — a bright 2-bedroom villa in up-and-coming Pererenan, surrounded by rice fields yet minutes from the beach.",
-  d_id:"Segera hadir — villa 2 kamar terang di Pererenan yang sedang naik daun, dikelilingi sawah namun beberapa menit dari pantai."},
- {name:"Sanur Garden Villa",area:"Sanur",br:4,ba:4,price:0,status:"soon",lat:-8.688,lng:115.262,
-  img:"https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1000&q=72",
-  amen:["pool","garden","wifi","ac","kitchen","breakfast"],
-  d_en:"Coming soon — a family-friendly 4-bedroom villa in laid-back Sanur, with a large garden and calm-water beaches perfect for kids.",
-  d_id:"Segera hadir — villa 4 kamar ramah keluarga di Sanur yang santai, dengan taman luas dan pantai berair tenang yang cocok buat anak-anak."},
-];
-// [min to nearest beach, min from airport] per villa
-const NEAR=[[5,45],[7,35],[40,60],[3,30],[4,50],[8,40],[5,20],[6,40],[4,30]];
-const TERMS=[["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"],["Yearly","Monthly","Weekly","Daily"]];
+const villas=(window.HUNI&&HUNI.villas)?HUNI.villas:[];
 const PERIOD={Daily:{en:"Daily",id:"Harian",per:{en:"/night",id:"/malam"}},Weekly:{en:"Weekly",id:"Mingguan",per:{en:"/week",id:"/minggu"}},Monthly:{en:"Monthly",id:"Bulanan",per:{en:"/month",id:"/bulan"}},Yearly:{en:"Yearly",id:"Tahunan",per:{en:"/year",id:"/tahun"}}};
-// shared extra photos so each villa has a browsable gallery (mockup only)
-const EXTRA=[
- "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=72",
- "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1000&q=72",
- "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1000&q=72",
- "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=72",
-];
 const ST={available:{en:"Available",id:"Tersedia"},booked:{en:"Booked",id:"Terisi"},soon:{en:"Coming soon",id:"Segera hadir"}};
 const T={
   back:{en:"← Back to all villas",id:"← Kembali ke semua villa"},
@@ -235,9 +167,9 @@ const T={
   location:{en:"Location",id:"Lokasi"},
 };
 
-const id=Math.max(0,Math.min(villas.length-1, parseInt(new URLSearchParams(location.search).get("id")||"0",10)||0));
-const v=villas[id];
-const gallery=[v.img,...EXTRA];
+const _pid=new URLSearchParams(location.search).get("id");
+const v=villas.find(x=>x.id===_pid)||villas[0]||{};
+const gallery=(v.photos&&v.photos.length)?v.photos:[""];
 let lang="en", cur="IDR", gi=0;
 
 function fmtPrice(idr, sub){
@@ -261,19 +193,19 @@ function render(){
   document.getElementById("vname").textContent=v.name;
   document.getElementById("vloc").textContent=v.area+", Bali";
   document.getElementById("vnear").textContent=lang==="en"
-    ? `${NEAR[id][0]} min to beach · ${NEAR[id][1]} min from airport`
-    : `${NEAR[id][0]} mnt ke pantai · ${NEAR[id][1]} mnt dari bandara`;
+    ? `${v.near[0]} min to beach · ${v.near[1]} min from airport`
+    : `${v.near[0]} mnt ke pantai · ${v.near[1]} mnt dari bandara`;
   const badge=document.getElementById("badge"); badge.className="badge "+v.status;
   document.getElementById("stlabel").textContent=ST[v.status][lang];
   document.getElementById("facts").innerHTML=
     `<div><b>${v.br}</b>${lang==="en"?"Bedrooms":"Kamar tidur"}</div>
      <div><b>${v.ba}</b>${lang==="en"?"Bathrooms":"Kamar mandi"}</div>
-     <div><b>${Math.max(v.br*2,2)}</b>${lang==="en"?"Guests":"Tamu"}</div>`;
-  const unit=TERMS[id][0];
-  const p=fmtPrice(v.price, PERIOD[unit].per[lang]);
+     <div><b>${Math.max((parseInt(v.br)||1)*2,2)}</b>${lang==="en"?"Guests":"Tamu"}</div>`;
+  const unit=v.terms[0];
+  const p=fmtPrice(v.price, (PERIOD[unit]?PERIOD[unit].per[lang]:("/"+String(unit||"").toLowerCase())));
   document.getElementById("price").innerHTML=v.status==="booked" ? "" : `${p.m} <small>${p.s}</small>`;
-  document.getElementById("vterms").textContent=(lang==="en"?"Rental: ":"Sewa: ")+TERMS[id].map(x=>PERIOD[x][lang]).join(" · ");
-  document.getElementById("vterms-note").textContent=TERMS[id].length>1
+  document.getElementById("vterms").textContent=(lang==="en"?"Rental: ":"Sewa: ")+v.terms.map(x=>(PERIOD[x]?PERIOD[x][lang]:x)).join(" · ");
+  document.getElementById("vterms-note").textContent=v.terms.length>1
     ? (lang==="en"?"Other durations — message us on WhatsApp for rates.":"Harga durasi lain — hubungi admin via WhatsApp.")
     : "";
   const wa=document.getElementById("wabtn");
@@ -292,7 +224,7 @@ function render(){
   wa.className="wa"; wa.textContent=label;
   wa.onclick=()=>{const url=`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;const w=window.open(url,"_blank");if(!w)window.location.href=url;};
   document.getElementById("desc").textContent=lang==="en"?v.d_en:v.d_id;
-  document.getElementById("amen").innerHTML=v.amen.map(k=>`<div><span class="ac">✓</span> ${AMEN[k][lang]}</div>`).join("");
+  document.getElementById("amen").innerHTML=(v.amenities||[]).map(a=>`<div><span class="ac">✓</span> ${a}</div>`).join("");
   document.getElementById("ctot").textContent=gallery.length;
 }
 
