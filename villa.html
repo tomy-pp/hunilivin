@@ -278,15 +278,19 @@ function render(){
     : "";
   const wa=document.getElementById("wabtn");
   const PHONE="628993000157";
-  if(v.status==="booked"){wa.className="wa disabled";wa.textContent=lang==="en"?"Currently booked":"Sedang terisi";wa.onclick=null;}
-  else{
-    if(v.status==="soon"){wa.className="wa";wa.textContent=lang==="en"?"Notify me when available":"Beri tahu saat tersedia";}
-    else{wa.className="wa";wa.textContent=lang==="en"?"Enquire on WhatsApp":"Tanya via WhatsApp";}
-    const msg=v.status==="soon"
-      ? (lang==="en"?`Hi Hunilivin, please notify me when ${v.name} is available.`:`Halo Hunilivin, tolong beri tahu saya saat ${v.name} tersedia.`)
-      : (lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Is it available?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Apakah tersedia?`);
-    wa.onclick=()=>{const url=`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;const w=window.open(url,"_blank");if(!w)window.location.href=url;};
+  let label, msg;
+  if(v.status==="booked"){
+    label=lang==="en"?"Ask availability":"Tanya ketersediaan";
+    msg=lang==="en"?`Hi Hunilivin, is ${v.name} available for other dates?`:`Halo Hunilivin, apakah ${v.name} tersedia untuk tanggal lain?`;
+  } else if(v.status==="soon"){
+    label=lang==="en"?"Notify me when available":"Beri tahu saat tersedia";
+    msg=lang==="en"?`Hi Hunilivin, please notify me when ${v.name} is available.`:`Halo Hunilivin, tolong beri tahu saya saat ${v.name} tersedia.`;
+  } else {
+    label=lang==="en"?"Enquire on WhatsApp":"Tanya via WhatsApp";
+    msg=lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Is it available?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Apakah tersedia?`;
   }
+  wa.className="wa"; wa.textContent=label;
+  wa.onclick=()=>{const url=`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;const w=window.open(url,"_blank");if(!w)window.location.href=url;};
   document.getElementById("desc").textContent=lang==="en"?v.d_en:v.d_id;
   document.getElementById("amen").innerHTML=v.amen.map(k=>`<div><span class="ac">✓</span> ${AMEN[k][lang]}</div>`).join("");
   document.getElementById("ctot").textContent=gallery.length;

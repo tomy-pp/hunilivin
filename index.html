@@ -123,7 +123,7 @@
   .card .price small{font-weight:400;font-size:12px;color:var(--muted)}
   .card .cbtn{margin-top:12px;border:0;border-radius:10px;padding:10px;font-size:14px;
     font-weight:600;cursor:pointer;background:var(--green);color:#fff}
-  .card.isbooked .cbtn{background:#e7e2d6;color:var(--muted);cursor:not-allowed}
+  .card.isbooked .cbtn{background:var(--green)}
 
   /* about */
   .about{background:var(--green);color:#f4efe4}
@@ -594,7 +594,7 @@ function renderCards(){
     const unit=TERMS[i][0];
     const p=fmtPrice(v.price, PERIOD[unit].per[lang]);
     const stTxt=STText[v.status][lang];
-    const btn = v.status==="booked" ? (lang==="en"?"Booked":"Terisi")
+    const btn = v.status==="booked" ? (lang==="en"?"Ask availability":"Tanya ketersediaan")
              : v.status==="soon" ? (lang==="en"?"Notify me":"Beri tahu saya")
              : (lang==="en"?"Enquire on WhatsApp":"Tanya via WhatsApp");
     const card=document.createElement("div");
@@ -722,8 +722,10 @@ function openWA(msg){
 }
 function waVilla(e,i){
   e.stopPropagation();
-  const v=villas[i]; if(v.status==="booked") return;
-  const msg=v.status==="soon"
+  const v=villas[i];
+  const msg=v.status==="booked"
+    ? (lang==="en"?`Hi Hunilivin, is ${v.name} available for other dates?`:`Halo Hunilivin, apakah ${v.name} tersedia untuk tanggal lain?`)
+    : v.status==="soon"
     ? (lang==="en"?`Hi Hunilivin, please notify me when ${v.name} is available.`:`Halo Hunilivin, tolong beri tahu saya saat ${v.name} tersedia.`)
     : (lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Is it available?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Apakah tersedia?`);
   openWA(msg);
