@@ -614,7 +614,7 @@ function renderCards(){
         <div class="meta">${v.br} ${lang==="en"?"bedrooms":"kamar"}</div>
         <div class="terms">${lang==="en"?"Rental":"Sewa"}: ${TERMS[i].map(x=>PERIOD[x][lang]).join(" · ")}</div>
         ${TERMS[i].length>1?`<div class="terms-note">${lang==="en"?"Other durations — message us on WhatsApp for rates.":"Harga durasi lain — hubungi admin via WhatsApp."}</div>`:""}
-        <div class="price">${p.main} <small>${p.sub}</small></div>
+        ${v.status==="booked" ? "" : `<div class="price">${p.main} <small>${p.sub}</small></div>`}
         <button class="cbtn" onclick="waVilla(event,${i})">${btn}</button>
       </div>`;
     wrap.appendChild(card);

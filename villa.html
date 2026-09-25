@@ -271,7 +271,7 @@ function render(){
      <div><b>${Math.max(v.br*2,2)}</b>${lang==="en"?"Guests":"Tamu"}</div>`;
   const unit=TERMS[id][0];
   const p=fmtPrice(v.price, PERIOD[unit].per[lang]);
-  document.getElementById("price").innerHTML=`${p.m} <small>${p.s}</small>`;
+  document.getElementById("price").innerHTML=v.status==="booked" ? "" : `${p.m} <small>${p.s}</small>`;
   document.getElementById("vterms").textContent=(lang==="en"?"Rental: ":"Sewa: ")+TERMS[id].map(x=>PERIOD[x][lang]).join(" · ");
   document.getElementById("vterms-note").textContent=TERMS[id].length>1
     ? (lang==="en"?"Other durations — message us on WhatsApp for rates.":"Harga durasi lain — hubungi admin via WhatsApp.")
