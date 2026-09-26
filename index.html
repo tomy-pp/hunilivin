@@ -498,12 +498,12 @@ let RATE = 16000; // 1 USD — updated live from exchange rate on load
 const villas = (window.HUNI && HUNI.villas) ? HUNI.villas : [];
 
 const reviews = [
-  {t_en:"Absolutely stunning villa and the team replied within minutes. Felt like a second home.", t_id:"Villa-nya luar biasa dan timnya bales dalam hitungan menit. Berasa rumah kedua.", who:"Sophie · Australia", img:"https://i.pravatar.cc/80?img=45"},
-  {t_en:"Booking was seamless even from abroad. The map made it so easy to pick a location.", t_id:"Booking gampang banget walau dari luar negeri. Petanya bikin milih lokasi jadi simpel.", who:"Lukas · Germany", img:"https://i.pravatar.cc/80?img=12"},
-  {t_en:"Clean, beautiful, and exactly like the photos. We'll be back next year.", t_id:"Bersih, cantik, dan persis kayak foto. Tahun depan pasti balik lagi.", who:"Maya · Jakarta", img:"https://i.pravatar.cc/80?img=32"},
-  {t_en:"The whole booking felt personal and effortless. Highly recommend Hunilivin.", t_id:"Seluruh proses booking terasa personal dan gampang banget. Sangat rekomendasi Hunilivin.", who:"Émile · France", img:"https://i.pravatar.cc/80?img=15"},
-  {t_en:"Beautiful villa, spotless, and the team was always one message away.", t_id:"Villa cantik, bersih banget, dan timnya selalu siap dibalas dalam satu pesan.", who:"Hana · Surabaya", img:"https://i.pravatar.cc/80?img=5"},
-  {t_en:"We found our villa on the map in seconds and booked the same day.", t_id:"Kami nemu villa lewat peta dalam hitungan detik dan langsung booking hari itu juga.", who:"Mark · UK", img:"https://i.pravatar.cc/80?img=8"},
+  {t:"Villa-nya stunning banget and everything was spotless. The team replied within minutes setiap kali kami tanya. Felt like a second home — definitely coming back!", who:"Sophie · Australia", img:"https://i.pravatar.cc/80?img=45"},
+  {t:"Booking was super easy even from abroad. The map bikin milih lokasi jadi gampang banget. Everything went smooth from start to finish, highly recommend!", who:"Lukas · Germany", img:"https://i.pravatar.cc/80?img=12"},
+  {t:"Tempatnya bersih, cantik, dan persis kayak foto — no surprises at all. The whole vibe was so nyaman, we'll be back next year for sure.", who:"Maya · Jakarta", img:"https://i.pravatar.cc/80?img=32"},
+  {t:"The team was so ramah and everything felt personal. Chat via WhatsApp, dibales cepet, and check-in was effortless. Pokoknya the best villa experience, merci!", who:"Émile · France", img:"https://i.pravatar.cc/80?img=15"},
+  {t:"Villa-nya cozy banget and the service was top. Timnya selalu fast response, jadi nggak pernah bingung. Worth every rupiah, recommended pol!", who:"Hana · Surabaya", img:"https://i.pravatar.cc/80?img=5"},
+  {t:"Found our villa on the map in seconds dan langsung booked the same day. Clean, quiet, and the location mantap. Best decision of the whole trip!", who:"Mark · UK", img:"https://i.pravatar.cc/80?img=8"},
 ];
 
 // derived from the baked villa data
@@ -646,7 +646,7 @@ function renderReviews(){
   reviews.forEach((r,i)=>{
     const el=document.createElement("div"); el.className="tcard";
     el.innerHTML=`<div class="stars">★★★★★</div>
-      <p>"${lang==="en"?r.t_en:r.t_id}"</p>
+      <p>"${r.t}"</p>
       <div class="who"><img src="${r.img}" alt=""/><div><b>${r.who.split(" · ")[0]}</b></div></div>`;
     g.appendChild(el);
   });
