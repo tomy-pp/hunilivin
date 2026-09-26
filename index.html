@@ -167,6 +167,7 @@
   .tcard p{font-size:14px;color:#3a423b}
   .tcard .who{display:flex;align-items:center;gap:10px;margin-top:14px}
   .tcard .who img{width:38px;height:38px;border-radius:50%;object-fit:cover}
+  .tcard .who .tavatar{width:38px;height:38px;flex:none;display:block}
   .tcard .who b{font-size:14px} .tcard .who span{font-size:12px;color:var(--muted);display:block}
   .tcard .tsrc{margin-left:auto;align-self:center;font-size:11px;color:var(--muted);border:1px solid var(--line);
     border-radius:20px;padding:3px 10px;white-space:nowrap}
@@ -498,12 +499,12 @@ let RATE = 16000; // 1 USD — updated live from exchange rate on load
 const villas = (window.HUNI && HUNI.villas) ? HUNI.villas : [];
 
 const reviews = [
-  {t:"Villa-nya stunning banget and everything was spotless. The team replied within minutes setiap kali kami tanya. Felt like a second home — definitely coming back!", who:"Sophie · Australia", img:"https://i.pravatar.cc/80?img=45"},
-  {t:"Booking was super easy even from abroad. The map bikin milih lokasi jadi gampang banget. Everything went smooth from start to finish, highly recommend!", who:"Lukas · Germany", img:"https://i.pravatar.cc/80?img=12"},
-  {t:"Tempatnya bersih, cantik, dan persis kayak foto — no surprises at all. The whole vibe was so nyaman, we'll be back next year for sure.", who:"Maya · Jakarta", img:"https://i.pravatar.cc/80?img=32"},
-  {t:"The team was so ramah and everything felt personal. Chat via WhatsApp, dibales cepet, and check-in was effortless. Pokoknya the best villa experience, merci!", who:"Émile · France", img:"https://i.pravatar.cc/80?img=15"},
-  {t:"Villa-nya cozy banget and the service was top. Timnya selalu fast response, jadi nggak pernah bingung. Worth every rupiah, recommended pol!", who:"Hana · Surabaya", img:"https://i.pravatar.cc/80?img=5"},
-  {t:"Found our villa on the map in seconds dan langsung booked the same day. Clean, quiet, and the location mantap. Best decision of the whole trip!", who:"Mark · UK", img:"https://i.pravatar.cc/80?img=8"},
+  {t:"Absolutely stunning villa and spotless from top to bottom. The team replied within minutes every time we asked. It genuinely felt like a second home — we're already planning to come back!", who:"Sophie · Australia"},
+  {t:"Booking was seamless even from abroad. The map made it so easy to pick the right location, and everything ran smoothly from start to finish. Highly recommend Hunilivin.", who:"Lukas · Germany"},
+  {t:"Tempatnya bersih, cantik, dan persis kayak di foto — nggak ada yang mengecewakan. Suasananya nyaman banget, betah pengen lama-lama. Tahun depan pasti balik lagi!", who:"Putri · Jakarta"},
+  {t:"The team was so warm and everything felt personal. A quick message on WhatsApp, a fast reply, and an effortless check-in. Easily the best villa experience we've had in Bali.", who:"Émile · France"},
+  {t:"Villanya cozy banget dan pelayanannya juara. Timnya selalu fast response, jadi nggak pernah bingung mau nanya apa-apa. Worth banget, recommended!", who:"Bagus · Surabaya"},
+  {t:"Found our villa on the map in seconds and booked the same day. Clean, quiet, and the location was perfect. Best decision of the whole trip!", who:"Mark · UK"},
 ];
 
 // derived from the baked villa data
@@ -647,7 +648,7 @@ function renderReviews(){
     const el=document.createElement("div"); el.className="tcard";
     el.innerHTML=`<div class="stars">★★★★★</div>
       <p>"${r.t}"</p>
-      <div class="who"><img src="${r.img}" alt=""/><div><b>${r.who.split(" · ")[0]}</b></div></div>`;
+      <div class="who"><svg class="tavatar" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#e4e4e4"/><circle cx="20" cy="16" r="7" fill="#bdbdbd"/><path d="M20 24c-6.2 0-11.2 3.7-12.4 8.9A20 20 0 0 0 20 40a20 20 0 0 0 12.4-7.1C31.2 27.7 26.2 24 20 24z" fill="#bdbdbd"/></svg><div><b>${r.who.split(" · ")[0]}</b></div></div>`;
     g.appendChild(el);
   });
 }
