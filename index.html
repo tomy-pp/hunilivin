@@ -230,6 +230,16 @@
     align-items:center;justify-content:center;transition:transform .2s}
   .exp-cap:hover .play{transform:scale(1.08)}
   .exp-cap .play svg{width:26px;height:26px;fill:var(--ink);margin-left:4px}
+  /* video lightbox */
+  .vid-modal{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.82);backdrop-filter:blur(4px);
+    display:none;align-items:center;justify-content:center;padding:20px}
+  .vid-modal.open{display:flex}
+  .vid-box{position:relative;width:min(1000px,100%)}
+  .vid-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .vid-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vid-close{position:absolute;top:-44px;right:0;width:36px;height:36px;border:0;border-radius:50%;
+    background:rgba(255,255,255,.18);color:#fff;font-size:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .vid-close:hover{background:rgba(255,255,255,.32)}
   /* instagram */
   .ig-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
   .ig-grid a{aspect-ratio:1;overflow:hidden;border-radius:10px;display:block}
@@ -397,8 +407,8 @@
 </section>
 
 <section class="experience">
-  <div class="exp-inner">
-    <img src="https://images.unsplash.com/photo-1602002418082-a4443e081dd1?auto=format&fit=crop&w=1600&q=70" alt="Villa experience" />
+  <div class="exp-inner" onclick="openVideo()" role="button" tabindex="0" aria-label="Play villa tour video" style="cursor:pointer">
+    <img src="https://img.youtube.com/vi/Gl40beRPrRI/maxresdefault.jpg" alt="Villa tour" onerror="this.src='https://img.youtube.com/vi/Gl40beRPrRI/hqdefault.jpg'" />
     <div class="exp-cap">
       <div class="kicker" data-t="exp_kicker">Life at our villas</div>
       <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
@@ -406,6 +416,13 @@
     </div>
   </div>
 </section>
+
+<div class="vid-modal" id="vid-modal" onclick="closeVideo(event)">
+  <div class="vid-box">
+    <button class="vid-close" onclick="closeVideo(event)" aria-label="Close video">&times;</button>
+    <div class="vid-frame" id="vid-frame"></div>
+  </div>
+</div>
 
 <section id="reviews">
   <div class="wrap">
@@ -645,6 +662,23 @@ function scrollReviews(dir){
   g.scrollBy({left:dir*step,behavior:"smooth"});
 }
 window.scrollReviews=scrollReviews;
+
+/* ---------- video tour lightbox ---------- */
+const TOUR_VIDEO_ID="Gl40beRPrRI";
+function openVideo(){
+  const m=document.getElementById("vid-modal"), f=document.getElementById("vid-frame");
+  f.innerHTML=`<iframe src="https://www.youtube.com/embed/${TOUR_VIDEO_ID}?autoplay=1&rel=0&playsinline=1" title="Hunilivin villa tour" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+  m.classList.add("open"); document.body.style.overflow="hidden";
+}
+function closeVideo(e){
+  if(e && e.target.closest(".vid-box") && !e.target.closest(".vid-close")) return; // clicks inside the player don't close
+  document.getElementById("vid-modal").classList.remove("open");
+  document.getElementById("vid-frame").innerHTML=""; // stop playback
+  document.body.style.overflow="";
+}
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeVideo(); });
+window.openVideo=openVideo; window.closeVideo=closeVideo;
+
 const REVIEW_SRC=["Google","Airbnb","Google","Booking.com","Google","Airbnb"];
 function renderReviews(){
   const g=document.getElementById("reviews-grid"); g.innerHTML="";
