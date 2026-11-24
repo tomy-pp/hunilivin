@@ -47,6 +47,16 @@ def norm_status(s):
     if s in ("soon", "coming soon", "coming-soon", "segera"): return "soon"
     return "available"
 
+def norm_listing(s):
+    """rent (default) | sale | both. Accepts flexible spellings from the sheet."""
+    s = (s or "").strip().lower().replace("&", " ").replace("+", " ")
+    has_sale = "sale" in s or "jual" in s
+    has_rent = "rent" in s or "sewa" in s or "lease" in s
+    if has_sale and has_rent: return "both"
+    if has_sale: return "sale"
+    if has_rent: return "rent"
+    return "rent"
+
 def repo_photos(vid):
     d = os.path.join(ROOT, "photos", vid)
     if os.path.isdir(d):
@@ -176,11 +186,15 @@ def main():
             "price": int(num(r.get("price_idr"))), "lat": num(r.get("lat")), "lng": num(r.get("lng")),
             "near": [int(num(r.get("beach_min"))), int(num(r.get("airport_min")))],
             "status": norm_status(r.get("status")),
+            "listing": norm_listing(r.get("listing")),
             "terms": split_pipe(r.get("rental_periods")) or ["Yearly"],
             "amenities": split_pipe(r.get("amenities")),
             "d_en": (r.get("description_en") or "").strip(), "d_id": (r.get("description_id") or "").strip(),
             "photos": resolve_photos(vid, r.get("photos")),
         })
+    # order: available first, coming-soon next, booked last (stable within each)
+    rank = {"available": 0, "soon": 1, "booked": 2}
+    villas.sort(key=lambda v: rank.get(v["status"], 9))
     payload = "window.HUNI=" + json.dumps({"villas": villas}, ensure_ascii=False) + ";\n"
     open(OUT, "w", encoding="utf-8").write(payload)
     print(f"OK: wrote {len(villas)} villas to {OUT} ({len(payload)} bytes)")

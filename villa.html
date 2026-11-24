@@ -63,6 +63,7 @@
   .badge.available{color:var(--avail)} .badge.available .dot{background:var(--avail)}
   .badge.booked{color:var(--booked)} .badge.booked .dot{background:var(--booked)}
   .badge.soon{color:var(--soon)} .badge.soon .dot{background:var(--soon)}
+  .badge.saletag{color:#fff;background:#1f2a24} .badge.saletag .dot{background:var(--gold)}
   .panel h1{font-size:32px;color:var(--green);margin:14px 0 6px}
   .panel .loc{color:var(--muted);font-size:15px}
   .facts{display:flex;gap:18px;margin:16px 0;flex-wrap:wrap}
@@ -124,6 +125,7 @@
 
     <div class="panel">
       <span class="badge" id="badge"><span class="dot"></span><span id="stlabel"></span></span>
+      <span class="badge saletag" id="salebadge" style="display:none;margin-left:8px"><span class="dot"></span><span id="salelabel"></span></span>
       <h1 id="vname"></h1>
       <div class="loc" id="vloc"></div>
       <div class="loc" id="vnear" style="margin-top:2px"></div>
@@ -199,13 +201,20 @@ function render(){
     : `${v.near[0]} mnt ke pantai · ${v.near[1]} mnt dari bandara`;
   const badge=document.getElementById("badge"); badge.className="badge "+v.status;
   document.getElementById("stlabel").textContent=ST[v.status][lang];
+  const forSale = v.listing==="sale" || v.listing==="both";
+  const sb=document.getElementById("salebadge");
+  if(forSale){ sb.style.display=""; document.getElementById("salelabel").textContent =
+    v.listing==="both" ? (lang==="en"?"For Sale & Rent":"Dijual & Disewa") : (lang==="en"?"For Sale":"Dijual"); }
+  else { sb.style.display="none"; }
   document.getElementById("facts").innerHTML=
     `<div><b>${v.br}</b>${lang==="en"?"Bedrooms":"Kamar tidur"}</div>
      <div><b>${v.ba}</b>${lang==="en"?"Bathrooms":"Kamar mandi"}</div>
      <div><b>${Math.max((parseInt(v.br)||1)*2,2)}</b>${lang==="en"?"Guests":"Tamu"}</div>`;
   const unit=v.terms[0];
   const p=fmtPrice(v.price, (PERIOD[unit]?PERIOD[unit].per[lang]:("/"+String(unit||"").toLowerCase())));
-  document.getElementById("price").innerHTML=v.status==="booked" ? "" : `${p.m} <small>${p.s}</small>`;
+  document.getElementById("price").innerHTML = v.status==="booked" ? ""
+    : forSale ? (lang==="en"?"Price on request":"Harga via WhatsApp")
+    : `${p.m} <small>${p.s}</small>`;
   document.getElementById("vterms").textContent=(lang==="en"?"Rental: ":"Sewa: ")+v.terms.map(x=>(PERIOD[x]?PERIOD[x][lang]:x)).join(" · ");
   document.getElementById("vterms-note").textContent=v.terms.length>1
     ? (lang==="en"?"Other durations — message us on WhatsApp for rates.":"Harga durasi lain — hubungi admin via WhatsApp.")
@@ -219,6 +228,9 @@ function render(){
   } else if(v.status==="soon"){
     label=lang==="en"?"Notify me when available":"Beri tahu saat tersedia";
     msg=lang==="en"?`Hi Hunilivin, please notify me when ${v.name} is available.`:`Halo Hunilivin, tolong beri tahu saya saat ${v.name} tersedia.`;
+  } else if(forSale){
+    label=lang==="en"?"Chat for price":"Tanya harga";
+    msg=lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Could you share the ${v.listing==="both"?"sale & rental":"sale"} price?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Boleh info harga ${v.listing==="both"?"jual & sewa":"jual"}-nya?`;
   } else {
     label=lang==="en"?"Enquire on WhatsApp":"Tanya via WhatsApp";
     msg=lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Is it available?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Apakah tersedia?`;

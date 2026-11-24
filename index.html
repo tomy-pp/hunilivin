@@ -129,6 +129,8 @@
   .badge.available .dot{background:var(--avail)} .badge.available{color:var(--avail)}
   .badge.booked .dot{background:var(--booked)} .badge.booked{color:var(--booked)}
   .badge.soon .dot{background:var(--soon)} .badge.soon{color:var(--soon)}
+  .badge.saletag{left:auto;right:12px;background:#1f2a24;color:#fff}
+  .badge.saletag .dot{background:var(--gold)}
   .card .cb{padding:16px;display:flex;flex-direction:column;gap:6px;flex:1}
   .card h3{font-size:19px}
   .card .loc{font-size:13px;color:var(--muted)}
@@ -622,15 +624,29 @@ function renderText(){
   document.documentElement.lang=lang;
 }
 
+function saleLabel(v){
+  if(v.listing==="both") return lang==="en"?"For Sale & Rent":"Dijual & Disewa";
+  if(v.listing==="sale") return lang==="en"?"For Sale":"Dijual";
+  return "";
+}
 function renderCards(){
   const wrap=document.getElementById("cards"); wrap.innerHTML="";
-  villas.forEach((v,i)=>{
+  // available first, then coming-soon, booked last
+  const rank={available:0,soon:1,booked:2};
+  const ordered=villas.map((v,i)=>({v,i})).sort((a,b)=>(rank[a.v.status]??9)-(rank[b.v.status]??9));
+  ordered.forEach(({v,i})=>{
     const unit=TERMS[i][0];
     const p=fmtPrice(v.price, (PERIOD[unit]?PERIOD[unit].per[lang]:("/"+String(unit||"").toLowerCase())));
     const stTxt=STText[v.status][lang];
+    const saleTxt=saleLabel(v);
+    const onRequest = v.listing==="sale" || v.listing==="both"; // price hidden, ask via WA
     const btn = v.status==="booked" ? (lang==="en"?"Ask availability":"Tanya ketersediaan")
              : v.status==="soon" ? (lang==="en"?"Notify me":"Beri tahu saya")
+             : onRequest ? (lang==="en"?"Chat for price":"Tanya harga")
              : (lang==="en"?"Enquire on WhatsApp":"Tanya via WhatsApp");
+    const priceLine = v.status==="booked" ? ""
+      : onRequest ? `<div class="price">${lang==="en"?"Price on request":"Harga via WhatsApp"}</div>`
+      : `<div class="price">${p.main} <small>${p.sub}</small></div>`;
     const card=document.createElement("div");
     card.id="card-"+i;
     card.className="card"+(v.status==="booked"?" isbooked":"");
@@ -640,6 +656,7 @@ function renderCards(){
       <div class="ph">
         <img src="${(v.photos&&v.photos[0])||''}" alt="${v.name}" loading="lazy"/>
         <div class="badge ${v.status}"><span class="dot"></span>${stTxt}</div>
+        ${saleTxt?`<div class="badge saletag"><span class="dot"></span>${saleTxt}</div>`:""}
       </div>
       <div class="cb">
         <h3>${v.name}</h3>
@@ -648,7 +665,7 @@ function renderCards(){
         <div class="meta">${v.br} ${lang==="en"?"bedrooms":"kamar"}</div>
         <div class="terms">${lang==="en"?"Rental":"Sewa"}: ${TERMS[i].map(x=>(PERIOD[x]?PERIOD[x][lang]:x)).join(" · ")}</div>
         ${TERMS[i].length>1?`<div class="terms-note">${lang==="en"?"Other durations — message us on WhatsApp for rates.":"Harga durasi lain — hubungi admin via WhatsApp."}</div>`:""}
-        ${v.status==="booked" ? "" : `<div class="price">${p.main} <small>${p.sub}</small></div>`}
+        ${priceLine}
         <button class="cbtn" onclick="waVilla(event,${i})">${btn}</button>
       </div>`;
     wrap.appendChild(card);
@@ -799,10 +816,13 @@ function openWA(msg){
 function waVilla(e,i){
   e.stopPropagation();
   const v=villas[i];
+  const forSale = v.listing==="sale" || v.listing==="both";
   const msg=v.status==="booked"
     ? (lang==="en"?`Hi Hunilivin, is ${v.name} available for other dates?`:`Halo Hunilivin, apakah ${v.name} tersedia untuk tanggal lain?`)
     : v.status==="soon"
     ? (lang==="en"?`Hi Hunilivin, please notify me when ${v.name} is available.`:`Halo Hunilivin, tolong beri tahu saya saat ${v.name} tersedia.`)
+    : forSale
+    ? (lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Could you share the ${v.listing==="both"?"sale & rental":"sale"} price?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Boleh info harga ${v.listing==="both"?"jual & sewa":"jual"}-nya?`)
     : (lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Is it available?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Apakah tersedia?`);
   openWA(msg);
 }
