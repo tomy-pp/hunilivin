@@ -49,7 +49,10 @@ def norm_status(s):
 
 def norm_listing(s):
     """rent (default) | sale | both. Accepts flexible spellings from the sheet."""
-    s = (s or "").strip().lower().replace("&", " ").replace("+", " ")
+    s = (s or "").strip().lower()
+    if s in ("both", "sale & rent", "sale and rent", "rent & sale", "jual & sewa", "jual sewa", "dijual & disewa", "dijual disewa"):
+        return "both"
+    s = s.replace("&", " ").replace("+", " ")
     has_sale = "sale" in s or "jual" in s
     has_rent = "rent" in s or "sewa" in s or "lease" in s
     if has_sale and has_rent: return "both"

@@ -212,9 +212,12 @@ function render(){
      <div><b>${Math.max((parseInt(v.br)||1)*2,2)}</b>${lang==="en"?"Guests":"Tamu"}</div>`;
   const unit=v.terms[0];
   const p=fmtPrice(v.price, (PERIOD[unit]?PERIOD[unit].per[lang]:("/"+String(unit||"").toLowerCase())));
-  document.getElementById("price").innerHTML = v.status==="booked" ? ""
-    : forSale ? (lang==="en"?"Price on request":"Harga via WhatsApp")
-    : `${p.m} <small>${p.s}</small>`;
+  const onRequest = !v.price && v.status!=="booked" && v.status!=="soon";
+  document.getElementById("price").innerHTML =
+      v.status==="booked" ? ""
+    : v.price ? `${p.m} <small>${p.s}</small>`
+    : v.status==="soon" ? (lang==="en"?"Coming soon":"Segera hadir")
+    : (lang==="en"?"Price on request":"Harga via WhatsApp");
   document.getElementById("vterms").textContent=(lang==="en"?"Rental: ":"Sewa: ")+v.terms.map(x=>(PERIOD[x]?PERIOD[x][lang]:x)).join(" · ");
   document.getElementById("vterms-note").textContent=v.terms.length>1
     ? (lang==="en"?"Other durations — message us on WhatsApp for rates.":"Harga durasi lain — hubungi admin via WhatsApp.")
@@ -228,12 +231,16 @@ function render(){
   } else if(v.status==="soon"){
     label=lang==="en"?"Notify me when available":"Beri tahu saat tersedia";
     msg=lang==="en"?`Hi Hunilivin, please notify me when ${v.name} is available.`:`Halo Hunilivin, tolong beri tahu saya saat ${v.name} tersedia.`;
-  } else if(forSale){
+  } else if(onRequest){
     label=lang==="en"?"Chat for price":"Tanya harga";
-    msg=lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Could you share the ${v.listing==="both"?"sale & rental":"sale"} price?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Boleh info harga ${v.listing==="both"?"jual & sewa":"jual"}-nya?`;
+    msg = forSale
+      ? (lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Could you share the ${v.listing==="both"?"sale & rental":"sale"} price?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Boleh info harga ${v.listing==="both"?"jual & sewa":"jual"}-nya?`)
+      : (lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Is it available?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Apakah tersedia?`);
   } else {
     label=lang==="en"?"Enquire on WhatsApp":"Tanya via WhatsApp";
-    msg=lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Is it available?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Apakah tersedia?`;
+    msg = forSale
+      ? (lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Could you share the sale price?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Boleh info harga jual-nya?`)
+      : (lang==="en"?`Hi Hunilivin, I'm interested in ${v.name}. Is it available?`:`Halo Hunilivin, saya tertarik dengan ${v.name}. Apakah tersedia?`);
   }
   wa.className="wa"; wa.textContent=label;
   wa.onclick=()=>{const url=`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;const w=window.open(url,"_blank");if(!w)window.location.href=url;};

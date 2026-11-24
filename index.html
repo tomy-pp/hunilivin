@@ -639,14 +639,16 @@ function renderCards(){
     const p=fmtPrice(v.price, (PERIOD[unit]?PERIOD[unit].per[lang]:("/"+String(unit||"").toLowerCase())));
     const stTxt=STText[v.status][lang];
     const saleTxt=saleLabel(v);
-    const onRequest = v.listing==="sale" || v.listing==="both"; // price hidden, ask via WA
+    const onRequest = !v.price && v.status!=="booked" && v.status!=="soon"; // no price set -> ask via WA
     const btn = v.status==="booked" ? (lang==="en"?"Ask availability":"Tanya ketersediaan")
              : v.status==="soon" ? (lang==="en"?"Notify me":"Beri tahu saya")
              : onRequest ? (lang==="en"?"Chat for price":"Tanya harga")
              : (lang==="en"?"Enquire on WhatsApp":"Tanya via WhatsApp");
-    const priceLine = v.status==="booked" ? ""
-      : onRequest ? `<div class="price">${lang==="en"?"Price on request":"Harga via WhatsApp"}</div>`
-      : `<div class="price">${p.main} <small>${p.sub}</small></div>`;
+    const priceLine =
+        v.status==="booked" ? ""
+      : v.price ? `<div class="price">${p.main} <small>${p.sub}</small></div>`
+      : v.status==="soon" ? `<div class="price">${lang==="en"?"Coming soon":"Segera hadir"}</div>`
+      : `<div class="price">${lang==="en"?"Price on request":"Harga via WhatsApp"}</div>`;
     const card=document.createElement("div");
     card.id="card-"+i;
     card.className="card"+(v.status==="booked"?" isbooked":"");
